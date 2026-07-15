@@ -225,6 +225,126 @@
           ],
           "correctOptionId": "c",
           "explanation": "Whole image analysis, including PCA for eigen-images, analyzes the image as a single entity without segmentation, unlike boundary or region methods which require identifying object outlines or interiors."
+        },
+        {
+          "id": 6,
+          "questionText": "Otsu's method determines the optimal global threshold by:",
+          "options": [
+            {
+              "id": "a",
+              "text": "Minimizing the mean intensity of the whole image"
+            },
+            {
+              "id": "b",
+              "text": "Maximizing the variance between the foreground and background pixel classes"
+            },
+            {
+              "id": "c",
+              "text": "Averaging the highest and lowest pixel intensities"
+            },
+            {
+              "id": "d",
+              "text": "Minimizing the number of edge pixels detected"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Otsu's method is an algorithm that automatically finds the optimal global threshold T by maximizing the variance between the two classes of pixels (foreground and background)."
+        },
+        {
+          "id": 7,
+          "questionText": "What is a key advantage of Otsu's method compared to manual thresholding techniques?",
+          "options": [
+            {
+              "id": "a",
+              "text": "It adapts locally to varying illumination across the image"
+            },
+            {
+              "id": "b",
+              "text": "It works equally well on unimodal and multimodal histograms"
+            },
+            {
+              "id": "c",
+              "text": "It automatically selects the threshold without requiring user interaction"
+            },
+            {
+              "id": "d",
+              "text": "It is unaffected by noise in the image"
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": "One of the pros of Otsu's method is that it is automatic, requiring no user interaction or manual tuning."
+        },
+        {
+          "id": 8,
+          "questionText": "Otsu's method works best when the image histogram is:",
+          "options": [
+            {
+              "id": "a",
+              "text": "Unimodal, with a single sharp peak"
+            },
+            {
+              "id": "b",
+              "text": "Bimodal, with two distinct peaks"
+            },
+            {
+              "id": "c",
+              "text": "Multimodal, with several evenly spaced peaks"
+            },
+            {
+              "id": "d",
+              "text": "Flat, with uniformly distributed intensities"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "A key limitation of Otsu's method is the bimodal requirement: it only works well if the image histogram has two distinct peaks, and fails on unimodal or multimodal histograms."
+        },
+        {
+          "id": 9,
+          "questionText": "Why might Otsu's method produce a poor threshold when the object of interest is very small compared to the background?",
+          "options": [
+            {
+              "id": "a",
+              "text": "The algorithm cannot process images with more than one object"
+            },
+            {
+              "id": "b",
+              "text": "Small objects increase the computational cost beyond feasible limits"
+            },
+            {
+              "id": "c",
+              "text": "The corresponding histogram peak may be swamped, leading to a poor threshold"
+            },
+            {
+              "id": "d",
+              "text": "The method requires objects to occupy at least half of the image"
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": "Under the size imbalance con, if the object is very small compared to the background (or vice versa), the histogram peaks may be swamped, leading to a poor threshold."
+        },
+        {
+          "id": 10,
+          "questionText": "Like all global thresholding methods, Otsu's method fails under which condition?",
+          "options": [
+            {
+              "id": "a",
+              "text": "When the image contains only grayscale values"
+            },
+            {
+              "id": "b",
+              "text": "When lighting varies across the image, such as with shadows"
+            },
+            {
+              "id": "c",
+              "text": "When the image resolution is too high"
+            },
+            {
+              "id": "d",
+              "text": "When the foreground and background have identical colors"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "The content notes that, like all global thresholding methods, Otsu's method fails if the lighting varies across the image, such as with shadows (uneven illumination)."
         }
       ]
     }
