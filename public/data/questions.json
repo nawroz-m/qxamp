@@ -27,7 +27,80 @@
           ],
           "correctOptionId": "b",
           "explanation": ""
+        }, 
+         {
+          "id": 2,
+          "questionText": "Why is oxygen more soluble in seawater than nitrogen, despite oxygen having a higher molecular weight (32) than... wait, actually similar to argon (40)?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Oxygen is monoatomic, making it easier to dissolve"
+            },
+            {
+              "id": "b",
+              "text": "Oxygen is diatomic, so its electron cloud is more easily perturbed by water, increasing solubility"
+            },
+            {
+              "id": "c",
+              "text": "Oxygen reacts chemically with water molecules"
+            },
+            {
+              "id": "d",
+              "text": "Oxygen has a lower molecular weight than nitrogen"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": ""
+        }, 
+         {
+          "id": 3,
+          "questionText": "What effect does increasing water temperature have on gas solubility?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Solubility increases because molecules move closer together"
+            },
+            {
+              "id": "b",
+              "text": "Solubility decreases because higher kinetic energy increases the probability of gas escaping the liquid phase"
+            },
+            {
+              "id": "c",
+              "text": "Solubility remains constant regardless of temperature"
+            },
+            {
+              "id": "d",
+              "text": "Solubility increases uniformly for all gases at the same rate"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": ""
+        }, 
+        {
+          "id": 4,
+          "questionText": "What is the role of the ocean "microlayer" in gas exchange between the atmosphere and the ocean?",
+          "options": [
+            {
+              "id": "a",
+              "text": "It has no effect on gas exchange, since gases pass freely between phases"
+            },
+            {
+              "id": "b",
+              "text": "It is a thick layer where turbulent mixing dominates gas transfer"
+            },
+            {
+              "id": "c",
+              "text": "It is a thin laminar surface layer that controls the transfer of gases by molecular diffusion, and its thickness decreases at higher wind speeds"
+            },
+            {
+              "id": "d",
+              "text": "It only matters for chemically reactive gases like ammonium and sulphates"
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": ""
         }
+        
       ]
     }
   ]
