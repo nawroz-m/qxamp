@@ -32,7 +32,7 @@ export default function QuizPage() {
 
   function handleSelect(questionId: number, optionId: string) {
     setAnswers((prev) => {
-      if (prev[questionId] !== undefined) return prev; // locked
+      // if (prev[questionId] !== undefined) return prev; // locked
       return { ...prev, [questionId]: optionId };
     });
   }

@@ -66,13 +66,14 @@ export function QuestionCard({
               <li key={option.id}>
                 <button
                   type="button"
-                  disabled={answered}
+                  // disabled={answered}
                   onClick={() => onSelect(option.id)}
                   aria-pressed={isSelected}
                   className={cn(
                     "flex w-full items-center gap-3 rounded-lg border p-3 text-left text-sm transition-colors",
-                    "disabled:cursor-not-allowed",
-                    !answered && "hover:border-primary hover:bg-accent",
+                    "hover:border-primary hover:bg-accent cursor-pointer",
+                    // "disabled:cursor-not-allowed",
+                    // !answered && "hover:border-primary hover:bg-accent",
                     showCorrect &&
                       "border-green-600 bg-green-50 text-green-900 dark:border-green-500 dark:bg-green-950/40 dark:text-green-100",
                     showWrong &&
