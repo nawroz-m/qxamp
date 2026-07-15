@@ -30,7 +30,7 @@ export default function HomePage() {
           Choose a question set below to start. Answer each question and get
           instant feedback with explanations.
         </p>
-        <Button asChild variant="outline" size="lg">
+        <Button variant="outline" size="lg">
           <Link href="/admin/add-question" className="p-4 flex gap-2">
             <Plus className="size-4" aria-hidden="true" />{" "}
             <span>Add Question</span>

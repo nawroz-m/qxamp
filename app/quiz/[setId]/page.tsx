@@ -46,7 +46,7 @@ export default function QuizPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 pb-24 pt-6">
       <div className="mb-6 flex items-center justify-between gap-3">
-        <Button asChild variant="ghost" size="lg">
+        <Button variant="ghost" size="lg">
           <Link href="/" className="flex gap-3">
             <ArrowLeft className="size-4" aria-hidden="true" />
             <span>Back to Sets</span>
@@ -78,7 +78,7 @@ export default function QuizPage() {
           <p className="text-sm text-muted-foreground">
             This quiz set could not be found.
           </p>
-          <Button asChild className="mt-4" size="sm">
+          <Button className="mt-4" size="sm">
             <Link href="/">Back to Sets</Link>
           </Button>
         </div>

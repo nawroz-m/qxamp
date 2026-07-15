@@ -154,7 +154,7 @@ export default function AddQuestionPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
       <div className="flex items-center justify-between gap-3">
-        <Button asChild variant="ghost" size="lg">
+        <Button variant="ghost" size="lg">
           <Link href="/" className="flex gap-3">
             <ArrowLeft className="size-4" aria-hidden="true" />
             <span>Back to Sets</span>

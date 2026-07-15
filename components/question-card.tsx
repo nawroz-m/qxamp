@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { Check, X, Lightbulb } from "lucide-react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import type { QuizQuestion } from "@/lib/quiz-types"
+import { Check, X, Lightbulb } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import type { QuizQuestion } from "@/lib/quiz-types";
 
 function resolveImage(path?: string) {
-  if (!path) return undefined
+  if (!path) return undefined;
   // stored paths look like "images/questions/gk-3.png" and live in /public/images/...
-  return `/${path.replace(/^\/+/, "")}`
+  return `/${path.replace(/^\/+/, "")}`;
 }
 
 export function QuestionCard({
@@ -18,22 +18,24 @@ export function QuestionCard({
   selectedOptionId,
   onSelect,
 }: {
-  question: QuizQuestion
-  index: number
-  selectedOptionId?: string
-  onSelect: (optionId: string) => void
+  question: QuizQuestion;
+  index: number;
+  selectedOptionId?: string;
+  onSelect: (optionId: string) => void;
 }) {
-  const answered = selectedOptionId !== undefined
-  const isCorrect = selectedOptionId === question.correctOptionId
-  const questionImage = resolveImage(question.questionImage)
-  const explanationImage = resolveImage(question.explanationImage)
+  const answered = selectedOptionId !== undefined;
+  const isCorrect = selectedOptionId === question.correctOptionId;
+  const questionImage = resolveImage(question.questionImage);
+  const explanationImage = resolveImage(question.explanationImage);
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-start gap-3">
           <Badge
-            variant={answered ? (isCorrect ? "default" : "destructive") : "secondary"}
+            variant={
+              answered ? (isCorrect ? "default" : "destructive") : "secondary"
+            }
             className="mt-0.5 shrink-0"
           >
             Q{index + 1}
@@ -54,11 +56,11 @@ export function QuestionCard({
       <CardContent className="flex flex-col gap-3">
         <ul className="flex flex-col gap-2" role="list">
           {question.options.map((option) => {
-            const isSelected = selectedOptionId === option.id
-            const isTheCorrect = option.id === question.correctOptionId
-            const showCorrect = answered && isTheCorrect
-            const showWrong = answered && isSelected && !isTheCorrect
-            const optionImage = resolveImage(option.img)
+            const isSelected = selectedOptionId === option.id;
+            const isTheCorrect = option.id === question.correctOptionId;
+            const showCorrect = answered && isTheCorrect;
+            const showWrong = answered && isSelected && !isTheCorrect;
+            const optionImage = resolveImage(option.img);
 
             return (
               <li key={option.id}>
@@ -103,7 +105,7 @@ export function QuestionCard({
                   )}
                 </button>
               </li>
-            )
+            );
           })}
         </ul>
 
@@ -114,7 +116,9 @@ export function QuestionCard({
               {isCorrect ? "Correct!" : "Explanation"}
             </div>
             {question.explanation && (
-              <p className="text-sm leading-relaxed text-muted-foreground">{question.explanation}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {question.explanation}
+              </p>
             )}
             {explanationImage && (
               <img
@@ -127,5 +131,5 @@ export function QuestionCard({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
