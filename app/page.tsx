@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { GraduationCap, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SetCard } from "@/components/set-card";
 import { useQuizData } from "@/lib/use-quiz-data";
@@ -11,13 +11,21 @@ export default function HomePage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 px-4 py-12 sm:py-16">
-      <header className="flex flex-col items-center gap-3 text-center">
-        <span className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-          <GraduationCap className="size-6" aria-hidden="true" />
+      <header className="flex flex-col items-center gap-3 text-center ">
+        <span className="flex gap-3">
+          <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground ">
+            <img
+              src={"/apple-icon.png"}
+              alt={`QXAMP`}
+              width={100}
+              height={100}
+              className="border-0 object-cover rounded-full"
+            />
+          </span>
+          <h1 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+            QXAMP
+          </h1>
         </span>
-        <h1 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-          Quiz Master
-        </h1>
         <p className="max-w-md text-pretty leading-relaxed text-muted-foreground">
           Choose a question set below to start. Answer each question and get
           instant feedback with explanations.
