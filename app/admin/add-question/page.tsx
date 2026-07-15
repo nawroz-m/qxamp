@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Plus } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Info, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,6 +26,11 @@ import { useQuizData } from "@/lib/use-quiz-data";
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const;
 const NEW_SET_VALUE = "__new__";
+const SET_ID_PATTERN = /^[a-z0-9_-]+$/;
+
+function sanitizeSetId(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+}
 
 type OptionId = (typeof OPTION_IDS)[number];
 
@@ -49,10 +54,31 @@ export default function AddQuestionPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const existingSetIds = data?.sets.map((s) => s.setId) ?? [];
+  const trimmedNewSetId = form.newSetId.trim();
+  const isNewSetIdDuplicate =
+    form.setMode === "new" &&
+    trimmedNewSetId.length > 0 &&
+    existingSetIds.includes(trimmedNewSetId);
+  const isNewSetIdFormatInvalid =
+    form.setMode === "new" &&
+    trimmedNewSetId.length > 0 &&
+    !SET_ID_PATTERN.test(trimmedNewSetId);
+  const newSetIdError = isNewSetIdDuplicate
+    ? "This Set ID already exists. Please choose another."
+    : isNewSetIdFormatInvalid
+      ? "Use only lowercase letters, numbers, hyphens, or underscores."
+      : null;
+  const isNewSetIdValid =
+    form.setMode !== "new" ||
+    (trimmedNewSetId.length > 0 &&
+      SET_ID_PATTERN.test(trimmedNewSetId) &&
+      !isNewSetIdDuplicate);
+
   const isValid =
     (form.setMode === "existing"
       ? !!form.existingSetId
-      : !!form.newSetId.trim() && !!form.newSetName.trim()) &&
+      : isNewSetIdValid && !!form.newSetName.trim()) &&
     !!form.questionText.trim() &&
     OPTION_IDS.every((id) => !!form.optionTexts[id].trim()) &&
     !!form.correctOptionId;
@@ -210,7 +236,17 @@ export default function AddQuestionPage() {
                 {form.setMode === "new" && (
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-2">
-                      <Label htmlFor="newSetId">Set ID</Label>
+                      <div className="flex items-center gap-1.5">
+                        <Label htmlFor="newSetId">Set ID</Label>
+                        <button
+                          type="button"
+                          className="inline-flex text-muted-foreground hover:text-foreground"
+                          title="Use only lowercase letters, numbers, hyphens, or underscores. No spaces or special characters allowed."
+                          aria-label="Set ID format rules"
+                        >
+                          <Info className="size-3.5" aria-hidden="true" />
+                        </button>
+                      </div>
                       <Input
                         id="newSetId"
                         name="newSetId"
@@ -219,11 +255,24 @@ export default function AddQuestionPage() {
                         onChange={(e) =>
                           setForm((prev) => ({
                             ...prev,
-                            newSetId: e.target.value,
+                            newSetId: sanitizeSetId(e.target.value),
                           }))
+                        }
+                        aria-invalid={!!newSetIdError}
+                        aria-describedby={
+                          newSetIdError ? "newSetId-error" : undefined
                         }
                         required
                       />
+                      {newSetIdError && (
+                        <p
+                          id="newSetId-error"
+                          role="alert"
+                          className="text-sm text-destructive"
+                        >
+                          {newSetIdError}
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-col gap-2">
                       <Label htmlFor="newSetName">Set Name</Label>
