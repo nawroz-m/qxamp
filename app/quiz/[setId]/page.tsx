@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, RotateCcw } from "lucide-react";
@@ -8,12 +8,28 @@ import { Button } from "@/components/ui/button";
 import { QuestionCard } from "@/components/question-card";
 import { ScoreCounter } from "@/components/score-counter";
 import { useQuizData } from "@/lib/use-quiz-data";
+import { Shuffle } from "lucide-react";
+
+function shuffleArray<T>(array: T[]): T[] {
+  // Fisher–Yates shuffle
+  const result = [...array];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
 
 export default function QuizPage() {
   const params = useParams<{ setId: string }>();
   const { data, error, isLoading } = useQuizData();
   // answers maps questionId -> selected option id
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [displayQuestions, setDisplayQuestions] = useState<
+    typeof set extends undefined ? any[] : any[]
+  >([]);
 
   const set = useMemo(
     () => data?.sets.find((s) => s.setId === params.setId),
@@ -36,6 +52,26 @@ export default function QuizPage() {
       return { ...prev, [questionId]: optionId };
     });
   }
+
+  function shuffleQuiz() {
+    if (!set) return;
+
+    const shuffledQuestions = shuffleArray(
+      set.questions.map((question) => ({
+        ...question,
+        options: shuffleArray(question.options),
+      })),
+    );
+
+    setDisplayQuestions(shuffledQuestions);
+    setAnswers({});
+  }
+
+  useEffect(() => {
+    if (!set) return;
+
+    setDisplayQuestions(set.questions);
+  }, [set]);
 
   function resetQuiz() {
     setAnswers({});
@@ -86,17 +122,24 @@ export default function QuizPage() {
 
       {set && (
         <>
-          <header className="mb-6">
+          <header className="mb-6 flex items-center justify-between gap-4">
             <h1 className="text-balance text-2xl font-bold tracking-tight">
               {set.setName}
+              <span className="text-sm text-muted-foreground"> ({total})</span>
             </h1>
-            <p className="text-sm text-muted-foreground">
-              {total} questions · select an answer to lock it in
-            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={shuffleQuiz}
+              className="cursor-pointer"
+            >
+              <Shuffle className="mr-2 h-4 w-4" />
+              Shuffle
+            </Button>
           </header>
 
           <div className="flex flex-col gap-5">
-            {set.questions.map((question, index) => (
+            {displayQuestions.map((question, index) => (
               <QuestionCard
                 key={question.id}
                 question={question}
