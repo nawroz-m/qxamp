@@ -2,31 +2,31 @@
   "sets": [
     {
       "setId": "set1",
-      "setName": "Image - Feature Extraction",
+      "setName": "GAS",
       "questions": [
         {
           "id": 1,
-          "questionText": "Which planet is known as the Red Planet?",
+          "questionText": "According to Henry's Law, the concentration of a gas dissolved in seawater is:",
           "options": [
             {
               "id": "a",
-              "text": "Venus"
+              "text": "Inversely proportional to its partial pressure above the sea"
             },
             {
               "id": "b",
-              "text": "Mars"
+              "text": "Proportional to its partial pressure above the sea, via an equilibrium constant"
             },
             {
               "id": "c",
-              "text": "Jupiter"
+              "text": "Independent of temperature and salinity"
             },
             {
               "id": "d",
-              "text": "Saturn"
+              "text": "Only dependent on the gas's molecular weight"
             }
           ],
           "correctOptionId": "b",
-          "explanation": "Mars is called the Red Planet because iron oxide (rust) on its surface gives it a reddish appearance."
+          "explanation": ""
         }
       ]
     }
