@@ -8,10 +8,22 @@
           "id": 1,
           "questionText": "Which planet is known as the Red Planet?",
           "options": [
-            { "id": "a", "text": "Venus" },
-            { "id": "b", "text": "Mars" },
-            { "id": "c", "text": "Jupiter" },
-            { "id": "d", "text": "Saturn" }
+            {
+              "id": "a",
+              "text": "Venus"
+            },
+            {
+              "id": "b",
+              "text": "Mars"
+            },
+            {
+              "id": "c",
+              "text": "Jupiter"
+            },
+            {
+              "id": "d",
+              "text": "Saturn"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "Mars is called the Red Planet because iron oxide (rust) on its surface gives it a reddish appearance."
@@ -20,10 +32,22 @@
           "id": 2,
           "questionText": "How many continents are there on Earth?",
           "options": [
-            { "id": "a", "text": "Five" },
-            { "id": "b", "text": "Six" },
-            { "id": "c", "text": "Seven" },
-            { "id": "d", "text": "Eight" }
+            {
+              "id": "a",
+              "text": "Five"
+            },
+            {
+              "id": "b",
+              "text": "Six"
+            },
+            {
+              "id": "c",
+              "text": "Seven"
+            },
+            {
+              "id": "d",
+              "text": "Eight"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "There are seven continents: Africa, Antarctica, Asia, Europe, North America, Oceania, and South America."
@@ -33,10 +57,22 @@
           "questionText": "What is the capital of France?",
           "questionImage": "images/questions/gk-3.png",
           "options": [
-            { "id": "a", "text": "Berlin" },
-            { "id": "b", "text": "Paris" },
-            { "id": "c", "text": "Madrid" },
-            { "id": "d", "text": "Rome" }
+            {
+              "id": "a",
+              "text": "Berlin"
+            },
+            {
+              "id": "b",
+              "text": "Paris"
+            },
+            {
+              "id": "c",
+              "text": "Madrid"
+            },
+            {
+              "id": "d",
+              "text": "Rome"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "Paris has been the capital of France for centuries and is home to the Eiffel Tower.",
@@ -46,10 +82,22 @@
           "id": 4,
           "questionText": "Who wrote the play 'Romeo and Juliet'?",
           "options": [
-            { "id": "a", "text": "Charles Dickens" },
-            { "id": "b", "text": "Mark Twain" },
-            { "id": "c", "text": "William Shakespeare" },
-            { "id": "d", "text": "Jane Austen" }
+            {
+              "id": "a",
+              "text": "Charles Dickens"
+            },
+            {
+              "id": "b",
+              "text": "Mark Twain"
+            },
+            {
+              "id": "c",
+              "text": "William Shakespeare"
+            },
+            {
+              "id": "d",
+              "text": "Jane Austen"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "William Shakespeare wrote 'Romeo and Juliet' in the late 16th century."
@@ -58,10 +106,22 @@
           "id": 5,
           "questionText": "What is the largest ocean on Earth?",
           "options": [
-            { "id": "a", "text": "Atlantic Ocean" },
-            { "id": "b", "text": "Indian Ocean" },
-            { "id": "c", "text": "Arctic Ocean" },
-            { "id": "d", "text": "Pacific Ocean" }
+            {
+              "id": "a",
+              "text": "Atlantic Ocean"
+            },
+            {
+              "id": "b",
+              "text": "Indian Ocean"
+            },
+            {
+              "id": "c",
+              "text": "Arctic Ocean"
+            },
+            {
+              "id": "d",
+              "text": "Pacific Ocean"
+            }
           ],
           "correctOptionId": "d",
           "explanation": "The Pacific Ocean is the largest and deepest of Earth's oceans."
@@ -70,10 +130,22 @@
           "id": 6,
           "questionText": "Which language has the most native speakers worldwide?",
           "options": [
-            { "id": "a", "text": "English" },
-            { "id": "b", "text": "Mandarin Chinese" },
-            { "id": "c", "text": "Spanish" },
-            { "id": "d", "text": "Hindi" }
+            {
+              "id": "a",
+              "text": "English"
+            },
+            {
+              "id": "b",
+              "text": "Mandarin Chinese"
+            },
+            {
+              "id": "c",
+              "text": "Spanish"
+            },
+            {
+              "id": "d",
+              "text": "Hindi"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "Mandarin Chinese has the most native speakers of any language in the world."
@@ -82,10 +154,22 @@
           "id": 7,
           "questionText": "In which year did World War II end?",
           "options": [
-            { "id": "a", "text": "1943" },
-            { "id": "b", "text": "1945" },
-            { "id": "c", "text": "1948" },
-            { "id": "d", "text": "1950" }
+            {
+              "id": "a",
+              "text": "1943"
+            },
+            {
+              "id": "b",
+              "text": "1945"
+            },
+            {
+              "id": "c",
+              "text": "1948"
+            },
+            {
+              "id": "d",
+              "text": "1950"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "World War II ended in 1945 following the surrender of the Axis powers."
@@ -94,10 +178,22 @@
           "id": 8,
           "questionText": "What is the currency used in Japan?",
           "options": [
-            { "id": "a", "text": "Won" },
-            { "id": "b", "text": "Yuan" },
-            { "id": "c", "text": "Yen" },
-            { "id": "d", "text": "Ringgit" }
+            {
+              "id": "a",
+              "text": "Won"
+            },
+            {
+              "id": "b",
+              "text": "Yuan"
+            },
+            {
+              "id": "c",
+              "text": "Yen"
+            },
+            {
+              "id": "d",
+              "text": "Ringgit"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "The Japanese Yen is the official currency of Japan."
@@ -106,10 +202,22 @@
           "id": 9,
           "questionText": "Which instrument has 88 keys?",
           "options": [
-            { "id": "a", "text": "Guitar" },
-            { "id": "b", "text": "Violin" },
-            { "id": "c", "text": "Piano" },
-            { "id": "d", "text": "Flute" }
+            {
+              "id": "a",
+              "text": "Guitar"
+            },
+            {
+              "id": "b",
+              "text": "Violin"
+            },
+            {
+              "id": "c",
+              "text": "Piano"
+            },
+            {
+              "id": "d",
+              "text": "Flute"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "A standard piano has 88 keys: 52 white and 36 black."
@@ -118,13 +226,52 @@
           "id": 10,
           "questionText": "What is the tallest mountain in the world above sea level?",
           "options": [
-            { "id": "a", "text": "K2" },
-            { "id": "b", "text": "Mount Everest" },
-            { "id": "c", "text": "Kilimanjaro" },
-            { "id": "d", "text": "Denali" }
+            {
+              "id": "a",
+              "text": "K2"
+            },
+            {
+              "id": "b",
+              "text": "Mount Everest"
+            },
+            {
+              "id": "c",
+              "text": "Kilimanjaro"
+            },
+            {
+              "id": "d",
+              "text": "Denali"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "Mount Everest stands at about 8,849 meters, the highest point above sea level."
+        },
+        {
+          "id": 11,
+          "questionText": "Hellow?",
+          "options": [
+            {
+              "id": "a",
+              "text": "hello 1"
+            },
+            {
+              "id": "b",
+              "text": "hello 2"
+            },
+            {
+              "id": "c",
+              "text": "hello 3",
+              "img": "images/options/11-c.png"
+            },
+            {
+              "id": "d",
+              "text": "hello 4"
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": "Just testing add api",
+          "questionImage": "images/questions/11.jpg",
+          "explanationImage": "images/explanations/11.jpg"
         }
       ]
     },
@@ -136,10 +283,22 @@
           "id": 1,
           "questionText": "What gas do plants absorb from the atmosphere for photosynthesis?",
           "options": [
-            { "id": "a", "text": "Oxygen" },
-            { "id": "b", "text": "Nitrogen" },
-            { "id": "c", "text": "Carbon Dioxide" },
-            { "id": "d", "text": "Hydrogen" }
+            {
+              "id": "a",
+              "text": "Oxygen"
+            },
+            {
+              "id": "b",
+              "text": "Nitrogen"
+            },
+            {
+              "id": "c",
+              "text": "Carbon Dioxide"
+            },
+            {
+              "id": "d",
+              "text": "Hydrogen"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "Plants absorb carbon dioxide and release oxygen during photosynthesis."
@@ -149,10 +308,22 @@
           "questionText": "Which planet in our solar system is the fourth from the Sun?",
           "questionImage": "images/questions/sci-2.png",
           "options": [
-            { "id": "a", "text": "Earth" },
-            { "id": "b", "text": "Mars" },
-            { "id": "c", "text": "Venus" },
-            { "id": "d", "text": "Mercury" }
+            {
+              "id": "a",
+              "text": "Earth"
+            },
+            {
+              "id": "b",
+              "text": "Mars"
+            },
+            {
+              "id": "c",
+              "text": "Venus"
+            },
+            {
+              "id": "d",
+              "text": "Mercury"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "Mars is the fourth planet from the Sun, right after Earth.",
@@ -162,10 +333,22 @@
           "id": 3,
           "questionText": "What is the chemical symbol for water?",
           "options": [
-            { "id": "a", "text": "H2O" },
-            { "id": "b", "text": "CO2" },
-            { "id": "c", "text": "O2" },
-            { "id": "d", "text": "NaCl" }
+            {
+              "id": "a",
+              "text": "H2O"
+            },
+            {
+              "id": "b",
+              "text": "CO2"
+            },
+            {
+              "id": "c",
+              "text": "O2"
+            },
+            {
+              "id": "d",
+              "text": "NaCl"
+            }
           ],
           "correctOptionId": "a",
           "explanation": "Water is made of two hydrogen atoms and one oxygen atom, giving it the formula H2O."
@@ -174,10 +357,22 @@
           "id": 4,
           "questionText": "What is the powerhouse of the cell?",
           "options": [
-            { "id": "a", "text": "Nucleus" },
-            { "id": "b", "text": "Ribosome" },
-            { "id": "c", "text": "Mitochondria" },
-            { "id": "d", "text": "Golgi apparatus" }
+            {
+              "id": "a",
+              "text": "Nucleus"
+            },
+            {
+              "id": "b",
+              "text": "Ribosome"
+            },
+            {
+              "id": "c",
+              "text": "Mitochondria"
+            },
+            {
+              "id": "d",
+              "text": "Golgi apparatus"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "Mitochondria produce energy (ATP) and are known as the powerhouse of the cell."
@@ -186,10 +381,22 @@
           "id": 5,
           "questionText": "At what temperature does water boil at sea level (Celsius)?",
           "options": [
-            { "id": "a", "text": "50°C" },
-            { "id": "b", "text": "90°C" },
-            { "id": "c", "text": "100°C" },
-            { "id": "d", "text": "150°C" }
+            {
+              "id": "a",
+              "text": "50°C"
+            },
+            {
+              "id": "b",
+              "text": "90°C"
+            },
+            {
+              "id": "c",
+              "text": "100°C"
+            },
+            {
+              "id": "d",
+              "text": "150°C"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "At sea level, water boils at 100 degrees Celsius (212°F)."
@@ -198,10 +405,22 @@
           "id": 6,
           "questionText": "Which force keeps us grounded on Earth?",
           "options": [
-            { "id": "a", "text": "Magnetism" },
-            { "id": "b", "text": "Gravity" },
-            { "id": "c", "text": "Friction" },
-            { "id": "d", "text": "Tension" }
+            {
+              "id": "a",
+              "text": "Magnetism"
+            },
+            {
+              "id": "b",
+              "text": "Gravity"
+            },
+            {
+              "id": "c",
+              "text": "Friction"
+            },
+            {
+              "id": "d",
+              "text": "Tension"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "Gravity is the force that attracts objects toward the center of the Earth."
@@ -210,10 +429,22 @@
           "id": 7,
           "questionText": "What is the hardest natural substance on Earth?",
           "options": [
-            { "id": "a", "text": "Gold" },
-            { "id": "b", "text": "Iron" },
-            { "id": "c", "text": "Diamond" },
-            { "id": "d", "text": "Quartz" }
+            {
+              "id": "a",
+              "text": "Gold"
+            },
+            {
+              "id": "b",
+              "text": "Iron"
+            },
+            {
+              "id": "c",
+              "text": "Diamond"
+            },
+            {
+              "id": "d",
+              "text": "Quartz"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "Diamond is the hardest known natural material, made of pure carbon."
@@ -222,10 +453,22 @@
           "id": 8,
           "questionText": "How many bones are in the adult human body?",
           "options": [
-            { "id": "a", "text": "196" },
-            { "id": "b", "text": "206" },
-            { "id": "c", "text": "216" },
-            { "id": "d", "text": "226" }
+            {
+              "id": "a",
+              "text": "196"
+            },
+            {
+              "id": "b",
+              "text": "206"
+            },
+            {
+              "id": "c",
+              "text": "216"
+            },
+            {
+              "id": "d",
+              "text": "226"
+            }
           ],
           "correctOptionId": "b",
           "explanation": "The adult human body has 206 bones."
@@ -234,10 +477,22 @@
           "id": 9,
           "questionText": "What type of energy does a moving object have?",
           "options": [
-            { "id": "a", "text": "Potential energy" },
-            { "id": "b", "text": "Chemical energy" },
-            { "id": "c", "text": "Kinetic energy" },
-            { "id": "d", "text": "Nuclear energy" }
+            {
+              "id": "a",
+              "text": "Potential energy"
+            },
+            {
+              "id": "b",
+              "text": "Chemical energy"
+            },
+            {
+              "id": "c",
+              "text": "Kinetic energy"
+            },
+            {
+              "id": "d",
+              "text": "Nuclear energy"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "Kinetic energy is the energy an object possesses due to its motion."
@@ -246,13 +501,55 @@
           "id": 10,
           "questionText": "Which part of the plant conducts photosynthesis?",
           "options": [
-            { "id": "a", "text": "Roots" },
-            { "id": "b", "text": "Stem" },
-            { "id": "c", "text": "Leaves" },
-            { "id": "d", "text": "Flowers" }
+            {
+              "id": "a",
+              "text": "Roots"
+            },
+            {
+              "id": "b",
+              "text": "Stem"
+            },
+            {
+              "id": "c",
+              "text": "Leaves"
+            },
+            {
+              "id": "d",
+              "text": "Flowers"
+            }
           ],
           "correctOptionId": "c",
           "explanation": "Leaves contain chlorophyll and are the main site of photosynthesis."
+        }
+      ]
+    },
+    {
+      "setId": "Set3",
+      "setName": "Physics",
+      "questions": [
+        {
+          "id": 1,
+          "questionText": "What is Neutons law",
+          "options": [
+            {
+              "id": "a",
+              "text": "sdf"
+            },
+            {
+              "id": "b",
+              "text": "sdf"
+            },
+            {
+              "id": "c",
+              "text": "dd"
+            },
+            {
+              "id": "d",
+              "text": "dd"
+            }
+          ],
+          "correctOptionId": "a",
+          "explanation": "ddddd"
         }
       ]
     }
