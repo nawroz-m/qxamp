@@ -101,6 +101,132 @@
           "explanation": ""
         }
       ]
+    },
+    {
+      "setId": "set2",
+      "setName": "Image Feature Extraction",
+      "questions": [
+        {
+          "id": 1,
+          "questionText": "In feature extraction, which level of image analysis focuses specifically on the outline of an object?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Boundary analysis"
+            },
+            {
+              "id": "b",
+              "text": "Region analysis"
+            },
+            {
+              "id": "c",
+              "text": "Whole image analysis"
+            },
+            {
+              "id": "d",
+              "text": "Texture analysis"
+            }
+          ],
+          "correctOptionId": "a",
+          "explanation": "Boundary (shape/external) analysis focuses on the outline of the object, using methods like chain codes, Fourier descriptors, and signatures."
+        },
+        {
+          "id": 2,
+          "questionText": "Which method represents an object's boundary as a wave-like signal for shape description?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Euler number"
+            },
+            {
+              "id": "b",
+              "text": "Fourier Descriptors"
+            },
+            {
+              "id": "c",
+              "text": "PCA"
+            },
+            {
+              "id": "d",
+              "text": "Global Histogram statistics"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Fourier Descriptors represent the boundary as a wave, making them a boundary-level feature extraction method used for tasks like digit recognition and silhouette matching."
+        },
+        {
+          "id": 3,
+          "questionText": "Which feature extraction level would be most appropriate for distinguishing a rough fabric surface from a smooth one?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Boundary analysis"
+            },
+            {
+              "id": "b",
+              "text": "Region analysis"
+            },
+            {
+              "id": "c",
+              "text": "Whole image analysis"
+            },
+            {
+              "id": "d",
+              "text": "Chain code analysis"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Region (texture/internal) analysis focuses on the content inside the object boundary and includes texture analysis methods, used to distinguish smooth surfaces from rough ones like fabric."
+        },
+        {
+          "id": 4,
+          "questionText": "The Euler number, used in region-based feature extraction, specifically measures what property of an object?",
+          "options": [
+            {
+              "id": "a",
+              "text": "The object's center of mass"
+            },
+            {
+              "id": "b",
+              "text": "The object's orientation angle"
+            },
+            {
+              "id": "c",
+              "text": "The number of holes in the object"
+            },
+            {
+              "id": "d",
+              "text": "The perimeter length of the object"
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": "The Euler number is a region-based moment method that measures the number of holes in an object."
+        },
+        {
+          "id": 5,
+          "questionText": "PCA (Principal Component Analysis), used for whole image analysis such as Eigenfaces, differs from region and boundary methods primarily because it:",
+          "options": [
+            {
+              "id": "a",
+              "text": "Requires segmentation of the object's boundary first"
+            },
+            {
+              "id": "b",
+              "text": "Only analyzes texture inside the object"
+            },
+            {
+              "id": "c",
+              "text": "Analyzes the image as a single entity without segmentation"
+            },
+            {
+              "id": "d",
+              "text": "Represents the boundary as a chain of directional moves"
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": "Whole image analysis, including PCA for eigen-images, analyzes the image as a single entity without segmentation, unlike boundary or region methods which require identifying object outlines or interiors."
+        }
+      ]
     }
   ]
 }
