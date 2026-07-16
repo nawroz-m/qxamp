@@ -345,6 +345,103 @@
           ],
           "correctOptionId": "b",
           "explanation": "The content notes that, like all global thresholding methods, Otsu's method fails if the lighting varies across the image, such as with shadows (uneven illumination)."
+        },
+
+        {
+          "id": 11,
+          "questionText": "What is the primary effect of a log transformation on an image's pixel values?",
+          "options": [
+            {
+              "id": "a",
+              "text": "It expands dark pixel values while compressing higher-level values"
+            },
+            {
+              "id": "b",
+              "text": "It compresses dark pixel values while expanding higher-level values"
+            },
+            {
+              "id": "c",
+              "text": "It equally expands both dark and bright pixel values"
+            },
+            {
+              "id": "d",
+              "text": "It inverts all pixel values in the image"
+            }
+          ],
+          "correctOptionId": "a",
+          "explanation": "The log transformation (s = c · log(1 + r)) is used to expand the values of dark pixels in an image while compressing the higher-level values."
+        },
+        {
+          "id": 12,
+          "questionText": "Why is the log transformation essential for visualizing Fourier Spectra?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Because Fourier Spectra only contain dark pixel values"
+            },
+            {
+              "id": "b",
+              "text": "Because without it, the wide value range makes the spectrum appear as a single white dot"
+            },
+            {
+              "id": "c",
+              "text": "Because Fourier Spectra require gamma correction instead"
+            },
+            {
+              "id": "d",
+              "text": "Because the log transformation removes noise from the frequency domain"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Fourier Spectra values range from 0 to millions, and without a log transformation the spectrum looks like a single white dot; with log, the details become visible."
+        },
+        {
+          "id": 13,
+          "questionText": "What makes the gamma (power-law) transformation more versatile than the log transformation?",
+          "options": [
+            {
+              "id": "a",
+              "text": "It can only be applied to medical images"
+            },
+            {
+              "id": "b",
+              "text": "The shape of its curve can be tuned via the gamma value"
+            },
+            {
+              "id": "c",
+              "text": "It always compresses dark pixel values"
+            },
+            {
+              "id": "d",
+              "text": "It does not require a constant c in its formula"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "The gamma transformation is described as more versatile than log because the curve shape can be tuned, unlike the fixed shape of the log transformation."
+        },
+        {
+          "id": 14,
+          "questionText": "In gamma correction, when would a gamma value less than 1 (y < 1) be used?",
+          "options": [
+            {
+              "id": "a",
+              "text": "To darken washed-out images by expanding bright values"
+            },
+            {
+              "id": "b",
+              "text": "To brighten shadows by expanding dark values, such as in medical X-rays or underexposed photos"
+            },
+            {
+              "id": "c",
+              "text": "To visualize Fourier Spectra more effectively"
+            },
+            {
+              "id": "d",
+              "text": "To equally balance dark and bright pixel values"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "When gamma is less than 1, the transformation brightens shadows by expanding dark values, which is used for medical X-rays or underexposed photos."
         }
       ]
     }
