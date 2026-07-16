@@ -442,6 +442,126 @@
           ],
           "correctOptionId": "b",
           "explanation": "When gamma is less than 1, the transformation brightens shadows by expanding dark values, which is used for medical X-rays or underexposed photos."
+        },
+        {
+          "id": 15,
+          "questionText": "For which type of filter kernel is spatial domain filtering typically faster than frequency domain filtering?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Large filter kernels"
+            },
+            {
+              "id": "b",
+              "text": "Small filter kernels, such as 3x3 or 5x5"
+            },
+            {
+              "id": "c",
+              "text": "Filters designed to remove periodic noise"
+            },
+            {
+              "id": "d",
+              "text": "Filters requiring global periodic noise removal"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Spatial domain filtering is much faster for small filter kernels (e.g., 3x3 or 5x5), while frequency domain filtering becomes advantageous for large filters."
+        },
+        {
+          "id": 16,
+          "questionText": "Why does frequency domain filtering become extremely fast for large filters?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Because it avoids using the Fourier Transform entirely"
+            },
+            {
+              "id": "b",
+              "text": "Because of the Convolution Theorem, filtering becomes simple multiplication"
+            },
+            {
+              "id": "c",
+              "text": "Because it does not require an inverse transform"
+            },
+            {
+              "id": "d",
+              "text": "Because large filters do not require padding"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Based on the Convolution Theorem, filtering in the frequency domain is just simple multiplication, making it extremely fast for large filters."
+        },
+        {
+          "id": 17,
+          "questionText": "What type of noise removal is possible in the frequency domain but impossible in the spatial domain?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Random Gaussian noise"
+            },
+            {
+              "id": "b",
+              "text": "Global periodic noise, like moiré patterns"
+            },
+            {
+              "id": "c",
+              "text": "Salt-and-pepper noise"
+            },
+            {
+              "id": "d",
+              "text": "Edge-related noise artifacts"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "The frequency domain allows easy removal of global periodic noise, like moiré patterns, which is impossible in the spatial domain."
+        },
+        {
+          "id": 18,
+          "questionText": "What artifact can appear in frequency domain filtering when ideal filters are used?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Wrap-around errors from insufficient convolution"
+            },
+            {
+              "id": "b",
+              "text": "Ringing, also known as the Gibbs phenomenon"
+            },
+            {
+              "id": "c",
+              "text": "Excessive blurring of edges"
+            },
+            {
+              "id": "d",
+              "text": "Loss of color information"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Frequency domain filtering can introduce artifacts like ringing (Gibbs phenomenon) if ideal filters are used."
+        },
+        {
+          "id": 19,
+          "questionText": "Why is padding required when performing filtering in the frequency domain?",
+          "options": [
+            {
+              "id": "a",
+              "text": "To avoid wrap-around errors"
+            },
+            {
+              "id": "b",
+              "text": "To reduce the computational overhead of the FFT"
+            },
+            {
+              "id": "c",
+              "text": "To eliminate the need for an inverse FFT"
+            },
+            {
+              "id": "d",
+              "text": "To make complex global filtering easier to design"
+            }
+          ],
+          "correctOptionId": "a",
+          "explanation": "A listed con of frequency domain filtering is that padding is required to avoid wrap-around errors."
         }
       ]
     }
