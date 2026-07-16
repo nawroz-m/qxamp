@@ -1,6 +1,6 @@
 {
-  "sets": [
-    {
+  "sets":{ 
+  "set1": {
       "setId": "set1",
       "setName": "GAS",
       "questions": [
@@ -100,9 +100,10 @@
           "correctOptionId": "c",
           "explanation": ""
         }
-      ]
-    },
-    {
+      ]  
+  }, 
+
+  "set2": {
       "setId": "set2",
       "setName": "Image Feature Extraction",
       "questions": [
@@ -565,5 +566,5 @@
         }
       ]
     }
-  ]
+  }
 }

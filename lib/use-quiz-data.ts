@@ -14,7 +14,7 @@ export function useQuizData() {
   useEffect(() => {
     if (cache) return
     let active = true
-    fetch("/data/questions.json")
+    fetch("/api/questions")
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load quiz data (${res.status})`)
         return res.json() as Promise<QuizData>

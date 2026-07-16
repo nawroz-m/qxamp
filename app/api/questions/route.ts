@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
 import type { QuizData, QuizQuestion, QuizSet } from "@/lib/quiz-types"
+import { buildDbUrl } from "@/lib/firebase"
 
-const DATA_PATH = path.join(process.cwd(), "public/data/questions.json")
 const OPTION_IDS = ["a", "b", "c", "d"] as const
 
 function getExtension(file: File): string {
@@ -27,6 +27,65 @@ async function saveImage(
   await fs.mkdir(path.dirname(fullPath), { recursive: true })
   await fs.writeFile(fullPath, Buffer.from(await file.arrayBuffer()))
   return relativePath
+}
+
+function normalizeQuestions(value: unknown): QuizQuestion[] {
+  if (!value) return []
+  if (Array.isArray(value)) {
+    return value.filter(Boolean) as QuizQuestion[]
+  }
+  if (typeof value === "object" && value !== null) {
+    return Object.values(value).filter(Boolean) as QuizQuestion[]
+  }
+  return []
+}
+
+function normalizeSets(raw: unknown): QuizData {
+  if (!raw) {
+    return { sets: [] }
+  }
+
+  if (Array.isArray(raw)) {
+    return {
+      sets: raw
+        .filter((item): item is QuizSet => typeof item === "object" && item !== null && "setId" in item)
+        .map((set) => ({
+          setId: set.setId,
+          setName: set.setName,
+          questions: normalizeQuestions(set.questions).sort((a, b) => a.id - b.id),
+        })),
+    }
+  }
+
+  if (typeof raw === "object" && raw !== null) {
+    return {
+      sets: Object.values(raw)
+        .filter((item): item is QuizSet => typeof item === "object" && item !== null && "setId" in item)
+        .map((set) => ({
+          setId: set.setId,
+          setName: set.setName,
+          questions: normalizeQuestions(set.questions).sort((a, b) => a.id - b.id),
+        })),
+    }
+  }
+
+  return { sets: [] }
+}
+
+export async function GET() {
+  try {
+    const response = await fetch(buildDbUrl("sets"), { cache: "no-store" })
+    if (!response.ok) {
+      throw new Error(`Failed to load quiz data (${response.status})`)
+    }
+
+    const raw = await response.json()
+    const data = normalizeSets(raw)
+    return NextResponse.json(data)
+  } catch (err) {
+    console.error("Failed to load quiz data from Firebase:", err)
+    return NextResponse.json({ error: "Failed to load quiz data" }, { status: 500 })
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -58,8 +117,13 @@ export async function POST(request: NextRequest) {
       optionTexts[id] = text.trim()
     }
 
-    const raw = await fs.readFile(DATA_PATH, "utf-8")
-    const data: QuizData = JSON.parse(raw)
+    const response = await fetch(buildDbUrl("sets"), { cache: "no-store" })
+    if (!response.ok) {
+      throw new Error(`Failed to read quiz sets (${response.status})`)
+    }
+
+    const rawSets = await response.json()
+    const setsById = typeof rawSets === "object" && rawSets !== null ? rawSets : {}
 
     let targetSet: QuizSet
 
@@ -67,21 +131,40 @@ export async function POST(request: NextRequest) {
       if (!newSetId?.trim() || !newSetName?.trim()) {
         return NextResponse.json({ error: "New set ID and name are required" }, { status: 400 })
       }
+
       const setId = newSetId.trim()
-      if (data.sets.some((s) => s.setId === setId)) {
+      if ((setsById as Record<string, unknown>)[setId]) {
         return NextResponse.json({ error: "A set with this ID already exists" }, { status: 400 })
       }
+
+      await fetch(buildDbUrl(`sets/${encodeURIComponent(setId)}`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ setId, setName: newSetName.trim() }),
+      })
+
       targetSet = { setId, setName: newSetName.trim(), questions: [] }
-      data.sets.push(targetSet)
     } else {
-      if (!existingSetId) {
+      const selectedSetId = existingSetId?.trim()
+      if (!selectedSetId) {
         return NextResponse.json({ error: "Please select a question set" }, { status: 400 })
       }
-      const found = data.sets.find((s) => s.setId === existingSetId)
-      if (!found) {
+
+      const setRecord = Array.isArray(setsById)
+        ? (setsById as Array<unknown>).find(
+            (item): item is Record<string, unknown> =>
+              typeof item === "object" && item !== null && (item as any).setId === selectedSetId,
+          )
+        : (setsById as Record<string, unknown>)[selectedSetId]
+      if (!setRecord || typeof setRecord !== "object" || setRecord === null) {
         return NextResponse.json({ error: "Question set not found" }, { status: 404 })
       }
-      targetSet = found
+
+      targetSet = {
+        setId: setRecord.setId,
+        setName: setRecord.setName,
+        questions: normalizeQuestions((setRecord as { questions?: unknown }).questions),
+      }
     }
 
     const questionId =
@@ -116,8 +199,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    targetSet.questions.push(question)
-    await fs.writeFile(DATA_PATH, `${JSON.stringify(data, null, "\t")}\n`, "utf-8")
+    const pushResponse = await fetch(
+      buildDbUrl(`sets/${encodeURIComponent(targetSet.setId)}/questions`),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(question),
+      },
+    )
+
+    if (!pushResponse.ok) {
+      throw new Error(`Failed to save question (${pushResponse.status})`)
+    }
 
     return NextResponse.json({
       success: true,
