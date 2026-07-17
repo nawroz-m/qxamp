@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuizData } from "@/lib/use-quiz-data";
+import { sanitizeGeneratedQuestion } from "@/lib/quiz-storage";
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const;
 const NEW_SET_VALUE = "__new__";
@@ -44,57 +45,6 @@ type GeneratedQuestion = {
 
 function sanitizeSetId(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
-}
-
-function sanitizeGeneratedQuestion(raw: unknown): GeneratedQuestion | null {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    return null;
-  }
-
-  const source = raw as Record<string, unknown>;
-  const questionText =
-    typeof source.questionText === "string" ? source.questionText.trim() : "";
-
-  if (!questionText) {
-    return null;
-  }
-
-  const rawOptions = Array.isArray(source.options) ? source.options : [];
-  const options = OPTION_IDS.map((id, index) => {
-    const option = rawOptions[index];
-    const optionData =
-      option && typeof option === "object" && option !== null
-        ? (option as Record<string, unknown>)
-        : null;
-    const text =
-      typeof optionData?.text === "string"
-        ? optionData.text
-        : typeof optionData?.optionText === "string"
-          ? optionData.optionText
-          : "";
-
-    return {
-      id,
-      text: text.trim(),
-    } satisfies GeneratedOption;
-  });
-
-  const fallbackCorrectOptionId = options.find((option) => option.text.trim())?.id ?? OPTION_IDS[0];
-  const correctOptionId =
-    typeof source.correctOptionId === "string" &&
-    OPTION_IDS.includes(source.correctOptionId as OptionId)
-      ? (source.correctOptionId as OptionId)
-      : fallbackCorrectOptionId;
-
-  const explanation =
-    typeof source.explanation === "string" ? source.explanation.trim() : "";
-
-  return {
-    questionText,
-    options,
-    correctOptionId,
-    explanation,
-  };
 }
 
 const initialForm = {
@@ -288,35 +238,30 @@ export default function AddQuestionPage() {
     setAiSuccess(null);
 
     try {
-      for (const question of generatedQuestions) {
-        const formData = new FormData();
-        formData.set("setMode", form.setMode);
-        if (form.setMode === "existing") {
-          formData.set("existingSetId", form.existingSetId);
-        } else {
-          formData.set("newSetId", form.newSetId.trim());
-          formData.set("newSetName", form.newSetName.trim());
-        }
-        formData.set("questionText", question.questionText.trim());
-        formData.set("explanation", question.explanation.trim());
-        formData.set("correctOptionId", question.correctOptionId);
-        for (const id of OPTION_IDS) {
-          const option = question.options.find((item) => item.id === id);
-          formData.set(`optionText_${id}`, option?.text.trim() ?? "");
-        }
+      const payload = {
+        setMode: form.setMode,
+        setName: form.setMode === "new" ? form.newSetName.trim() : undefined,
+        setId: form.setMode === "new" ? form.newSetId.trim() : form.existingSetId,
+        questions: generatedQuestions.map((question) => ({
+          questionText: question.questionText.trim(),
+          options: question.options.map((option) => ({ id: option.id, text: option.text.trim() })),
+          correctOptionId: question.correctOptionId,
+          explanation: question.explanation.trim(),
+        })),
+      };
 
-        const res = await fetch("/api/questions", {
-          method: "POST",
-          body: formData,
-        });
-        const result = await res.json();
+      const res = await fetch("/api/questions/save-batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
 
-        if (!res.ok) {
-          throw new Error(result.error ?? "Failed to save generated question.");
-        }
+      if (!res.ok) {
+        throw new Error(result.error ?? "Failed to save generated questions.");
       }
 
-      setAiSuccess("Generated questions were added to your selected set.");
+      setAiSuccess(`Generated questions were added to "${result.setName}" successfully.`);
       setGeneratedQuestions([]);
       setAiPrompt("");
       setIsAiPanelOpen(false);

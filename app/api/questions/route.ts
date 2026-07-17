@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
-import type { QuizData, QuizQuestion, QuizSet } from "@/lib/quiz-types"
+import type { QuizQuestion, QuizSet } from "@/lib/quiz-types"
 import { buildDbUrl } from "@/lib/firebase"
+import { ensureSetTarget, normalizeQuestions, normalizeSets, saveQuestionToSet } from "@/lib/quiz-storage"
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const
 
@@ -27,49 +28,6 @@ async function saveImage(
   await fs.mkdir(path.dirname(fullPath), { recursive: true })
   await fs.writeFile(fullPath, Buffer.from(await file.arrayBuffer()))
   return relativePath
-}
-
-function normalizeQuestions(value: unknown): QuizQuestion[] {
-  if (!value) return []
-  if (Array.isArray(value)) {
-    return value.filter(Boolean) as QuizQuestion[]
-  }
-  if (typeof value === "object" && value !== null) {
-    return Object.values(value).filter(Boolean) as QuizQuestion[]
-  }
-  return []
-}
-
-function normalizeSets(raw: unknown): QuizData {
-  if (!raw) {
-    return { sets: [] }
-  }
-
-  if (Array.isArray(raw)) {
-    return {
-      sets: raw
-        .filter((item): item is QuizSet => typeof item === "object" && item !== null && "setId" in item)
-        .map((set) => ({
-          setId: set.setId,
-          setName: set.setName,
-          questions: normalizeQuestions(set.questions).sort((a, b) => a.id - b.id),
-        })),
-    }
-  }
-
-  if (typeof raw === "object" && raw !== null) {
-    return {
-      sets: Object.values(raw)
-        .filter((item): item is QuizSet => typeof item === "object" && item !== null && "setId" in item)
-        .map((set) => ({
-          setId: set.setId,
-          setName: set.setName,
-          questions: normalizeQuestions(set.questions).sort((a, b) => a.id - b.id),
-        })),
-    }
-  }
-
-  return { sets: [] }
 }
 
 export async function GET() {
@@ -127,44 +85,28 @@ export async function POST(request: NextRequest) {
 
     let targetSet: QuizSet
 
-    if (setMode === "new") {
-      if (!newSetId?.trim() || !newSetName?.trim()) {
-        return NextResponse.json({ error: "New set ID and name are required" }, { status: 400 })
-      }
-
-      const setId = newSetId.trim()
-      if ((setsById as Record<string, unknown>)[setId]) {
-        return NextResponse.json({ error: "A set with this ID already exists" }, { status: 400 })
-      }
-
-      await fetch(buildDbUrl(`sets/${encodeURIComponent(setId)}`), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ setId, setName: newSetName.trim() }),
+    try {
+      const resolved = await ensureSetTarget({
+        setMode: setMode === "new" ? "new" : "existing",
+        existingSetId,
+        newSetId,
+        newSetName,
+        setsById,
       })
-
-      targetSet = { setId, setName: newSetName.trim(), questions: [] }
-    } else {
-      const selectedSetId = existingSetId?.trim()
-      if (!selectedSetId) {
-        return NextResponse.json({ error: "Please select a question set" }, { status: 400 })
+      targetSet = resolved.targetSet
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to resolve question set"
+      if (message === "Question set not found") {
+        return NextResponse.json({ error: message }, { status: 404 })
       }
-
-      const setRecord = Array.isArray(setsById)
-        ? (setsById as Array<unknown>).find(
-            (item): item is Record<string, unknown> =>
-              typeof item === "object" && item !== null && (item as any).setId === selectedSetId,
-          )
-        : (setsById as Record<string, unknown>)[selectedSetId]
-      if (!setRecord || typeof setRecord !== "object" || setRecord === null) {
-        return NextResponse.json({ error: "Question set not found" }, { status: 404 })
+      if (
+        message === "Please select a question set" ||
+        message === "New set ID and name are required" ||
+        message === "A set with this ID already exists"
+      ) {
+        return NextResponse.json({ error: message }, { status: 400 })
       }
-
-      targetSet = {
-        setId: setRecord.setId,
-        setName: setRecord.setName,
-        questions: normalizeQuestions((setRecord as { questions?: unknown }).questions),
-      }
+      return NextResponse.json({ error: message }, { status: 500 })
     }
 
     const questionId =
@@ -199,17 +141,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const pushResponse = await fetch(
-      buildDbUrl(`sets/${encodeURIComponent(targetSet.setId)}/questions`),
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(question),
-      },
-    )
+    const saved = await saveQuestionToSet(targetSet.setId, question)
 
-    if (!pushResponse.ok) {
-      throw new Error(`Failed to save question (${pushResponse.status})`)
+    if (!saved.success) {
+      throw new Error("Failed to save question")
     }
 
     return NextResponse.json({
