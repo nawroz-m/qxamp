@@ -1,0 +1,33 @@
+
+{
+      "setId": "set2",
+      "setName": "Image Feature Extraction",
+      "questions": [
+        {
+          "id": 1,
+          "questionText": "In feature extraction, which level of image analysis focuses specifically on the outline of an object?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Boundary analysis"
+            },
+            {
+              "id": "b",
+              "text": "Region analysis"
+            },
+            {
+              "id": "c",
+              "text": "Whole image analysis"
+            },
+            {
+              "id": "d",
+              "text": "Texture analysis"
+            }
+          ],
+          "correctOptionId": "a",
+          "explanation": "Boundary (shape/external) analysis focuses on the outline of the object, using methods like chain codes, Fourier descriptors, and signatures."
+        }
+    ]
+}
+ 
+ 

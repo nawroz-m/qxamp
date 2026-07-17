@@ -563,7 +563,247 @@
           ],
           "correctOptionId": "a",
           "explanation": "A listed con of frequency domain filtering is that padding is required to avoid wrap-around errors."
+        }, 
+    {
+      "id": 20,
+      "questionText": "Morphological operators are primarily used for which type of image processing task?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pre- or post-processing of binary images (masks)"
+        },
+        {
+          "id": "b",
+          "text": "Converting color images to grayscale"
+        },
+        {
+          "id": "c",
+          "text": "Compressing images for storage"
+        },
+        {
+          "id": "d",
+          "text": "Enhancing frequency domain representations"
         }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Morphological operators are used primarily for pre- or post-processing binary images (masks), such as cleaning noise, separating objects, and filling holes."
+    },
+    {
+      "id": 21,
+      "questionText": "Which morphological operator is used to separate objects that are accidentally touching?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Dilation"
+        },
+        {
+          "id": "b",
+          "text": "Closing"
+        },
+        {
+          "id": "c",
+          "text": "Erosion"
+        },
+        {
+          "id": "d",
+          "text": "Opening's dilation step"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "Erosion shrinks or thins objects by removing pixels from boundaries, which is used in practice to remove small noise and separate touching objects."
+    },
+    {
+      "id": 22,
+      "questionText": "What is the practical effect of the Dilation operator on a binary image?",
+      "options": [
+        {
+          "id": "a",
+          "text": "It shrinks objects and removes isolated noise pixels"
+        },
+        {
+          "id": "b",
+          "text": "It grows objects, filling small holes and bridging gaps between broken lines"
+        },
+        {
+          "id": "c",
+          "text": "It extracts the skeleton of an object without changing its size"
+        },
+        {
+          "id": "d",
+          "text": "It separates touching objects into distinct regions"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Dilation grows or thickens objects by adding pixels to boundaries, and its practical use is filling small holes and bridging gaps between broken lines."
+    },
+    {
+      "id": 23,
+      "questionText": "The Opening operator, defined as Erosion followed by Dilation, is practically used to:",
+      "options": [
+        {
+          "id": "a",
+          "text": "Fill internal holes without expanding the object's outer size"
+        },
+        {
+          "id": "b",
+          "text": "Remove small noise objects without changing the size of the main object"
+        },
+        {
+          "id": "c",
+          "text": "Bridge gaps between broken lines in an image"
+        },
+        {
+          "id": "d",
+          "text": "Thicken all objects uniformly across the image"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Opening (Erosion followed by Dilation) is practically used to remove small noise objects without changing the size of the main object."
+    },
+    {
+      "id": 24,
+      "questionText": "How does the Closing operator (Dilation followed by Erosion) differ from Opening in its practical effect?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Closing removes small noise objects, while Opening fills internal holes"
+        },
+        {
+          "id": "b",
+          "text": "Closing fills internal holes and gaps without expanding the object's outer size, while Opening removes small noise without changing the main object's size"
+        },
+        {
+          "id": "c",
+          "text": "Closing and Opening both perform the exact same operation in a different order with identical results"
+        },
+        {
+          "id": "d",
+          "text": "Closing shrinks objects permanently, while Opening only affects boundary pixels temporarily"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Closing (Dilation followed by Erosion) fills internal holes and gaps without expanding the object's outer size, whereas Opening (Erosion followed by Dilation) removes small noise objects without changing the size of the main object."
+    },  
+    {
+      "id": 25,
+      "questionText": "Compared to second-order derivative operators, first-order gradient operators (like Sobel and Prewitt) are:",
+      "options": [
+        {
+          "id": "a",
+          "text": "More sensitive to noise"
+        },
+        {
+          "id": "b",
+          "text": "Less sensitive to noise"
+        },
+        {
+          "id": "c",
+          "text": "Equally sensitive to noise"
+        },
+        {
+          "id": "d",
+          "text": "Unable to detect edges in noisy images"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "First-order gradient operators are less sensitive to noise than second-order operators, which is listed as one of their key advantages."
+    },
+    {
+      "id": 26,
+      "questionText": "What information can first-order gradient operators calculate easily that makes them useful for edge detection?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only the direction of the edge, not its strength"
+        },
+        {
+          "id": "b",
+          "text": "Both the magnitude and direction of the edge"
+        },
+        {
+          "id": "c",
+          "text": "The exact single-pixel location via zero-crossing"
+        },
+        {
+          "id": "d",
+          "text": "The rotational invariance of the image"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "First-order gradient operators calculate both magnitude (strength) and direction (angle) of the edge easily."
+    },
+    {
+      "id": 27,
+      "questionText": "A major drawback of first-order derivative operators for edge detection is that they:",
+      "options": [
+        {
+          "id": "a",
+          "text": "Produce thick edges that require post-processing to pinpoint the exact boundary"
+        },
+        {
+          "id": "b",
+          "text": "Cannot calculate edge direction"
+        },
+        {
+          "id": "c",
+          "text": "Generate double edges at ramp transitions"
+        },
+        {
+          "id": "d",
+          "text": "Are extremely sensitive to noise"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "A con of first-order operators is that they produce 'thick' edges (multiple pixels wide) that require post-processing (thinning) to pinpoint the exact boundary."
+    },
+    {
+      "id": 28,
+      "questionText": "The Laplacian (2nd order derivative) operator can achieve single-pixel edge precision through which mechanism?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Gradient magnitude thresholding"
+        },
+        {
+          "id": "b",
+          "text": "Zero-crossing detection"
+        },
+        {
+          "id": "c",
+          "text": "Directional angle averaging"
+        },
+        {
+          "id": "d",
+          "text": "Post-processing thinning"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The Laplacian can produce thinner edges with single pixel precision via zero-crossing, unlike first-order operators which produce thicker edges."
+    },
+    {
+      "id": 29,
+      "questionText": "What is a key disadvantage of using the Laplacian (2nd order derivative) for edge detection?",
+      "options": [
+        {
+          "id": "a",
+          "text": "It cannot detect edge direction or magnitude at all"
+        },
+        {
+          "id": "b",
+          "text": "It is rotationally variant (anisotropic)"
+        },
+        {
+          "id": "c",
+          "text": "It is extremely sensitive to noise and can generate double edges at ramp transitions"
+        },
+        {
+          "id": "d",
+          "text": "It always produces thicker edges than first-order operators"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "The Laplacian's cons include being extremely sensitive to noise and generating 'double edges' at ramp transitions."
+    }
       ]
     }
   }

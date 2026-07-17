@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Info, Plus } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Info, Loader2, Sparkles, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,11 +28,74 @@ const OPTION_IDS = ["a", "b", "c", "d"] as const;
 const NEW_SET_VALUE = "__new__";
 const SET_ID_PATTERN = /^[a-z0-9_-]+$/;
 
+type OptionId = (typeof OPTION_IDS)[number];
+
+type GeneratedOption = {
+  id: OptionId;
+  text: string;
+};
+
+type GeneratedQuestion = {
+  questionText: string;
+  options: GeneratedOption[];
+  correctOptionId: OptionId;
+  explanation: string;
+};
+
 function sanitizeSetId(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
 }
 
-type OptionId = (typeof OPTION_IDS)[number];
+function sanitizeGeneratedQuestion(raw: unknown): GeneratedQuestion | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return null;
+  }
+
+  const source = raw as Record<string, unknown>;
+  const questionText =
+    typeof source.questionText === "string" ? source.questionText.trim() : "";
+
+  if (!questionText) {
+    return null;
+  }
+
+  const rawOptions = Array.isArray(source.options) ? source.options : [];
+  const options = OPTION_IDS.map((id, index) => {
+    const option = rawOptions[index];
+    const optionData =
+      option && typeof option === "object" && option !== null
+        ? (option as Record<string, unknown>)
+        : null;
+    const text =
+      typeof optionData?.text === "string"
+        ? optionData.text
+        : typeof optionData?.optionText === "string"
+          ? optionData.optionText
+          : "";
+
+    return {
+      id,
+      text: text.trim(),
+    } satisfies GeneratedOption;
+  });
+
+  const fallbackCorrectOptionId = options.find((option) => option.text.trim())?.id ?? OPTION_IDS[0];
+  const correctOptionId =
+    typeof source.correctOptionId === "string" &&
+    OPTION_IDS.includes(source.correctOptionId as OptionId)
+      ? (source.correctOptionId as OptionId)
+      : fallbackCorrectOptionId;
+
+  const explanation =
+    typeof source.explanation === "string" ? source.explanation.trim() : "";
+
+  return {
+    questionText,
+    options,
+    correctOptionId,
+    explanation,
+  };
+}
 
 const initialForm = {
   setMode: "existing" as "existing" | "new",
@@ -53,6 +116,13 @@ export default function AddQuestionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isAiPanelOpen, setIsAiPanelOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiModel, setAiModel] = useState("gpt-4o-mini");
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiSuccess, setAiSuccess] = useState<string | null>(null);
+  const [generatedQuestions, setGeneratedQuestions] = useState<GeneratedQuestion[]>([]);
 
   const existingSetIds = data?.sets.map((s) => s.setId) ?? [];
   const trimmedNewSetId = form.newSetId.trim();
@@ -150,6 +220,112 @@ export default function AddQuestionPage() {
 
   const selectedSetValue =
     form.setMode === "new" ? NEW_SET_VALUE : form.existingSetId || null;
+
+  function updateGeneratedQuestion(
+    index: number,
+    updater: (question: GeneratedQuestion) => GeneratedQuestion,
+  ) {
+    setGeneratedQuestions((prev) =>
+      prev.map((question, questionIndex) =>
+        questionIndex === index ? updater(question) : question,
+      ),
+    );
+  }
+
+  async function handleGenerateQuestions() {
+    if (!aiPrompt.trim() || isAiGenerating) return;
+
+    setIsAiGenerating(true);
+    setAiError(null);
+    setAiSuccess(null);
+
+    try {
+      const res = await fetch("/api/ai-generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: aiPrompt.trim(), model: aiModel }),
+      });
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error ?? "Failed to generate questions.");
+      }
+
+      const nextQuestions = (result.questions ?? [])
+        .map((item: unknown) => sanitizeGeneratedQuestion(item))
+        .filter((item): item is GeneratedQuestion => Boolean(item));
+
+      if (nextQuestions.length === 0) {
+        throw new Error("No questions were returned.");
+      }
+
+      setGeneratedQuestions(nextQuestions);
+      setIsAiPanelOpen(true);
+    } catch (err) {
+      setGeneratedQuestions([]);
+      setAiError(
+        err instanceof Error ? err.message : "Failed to generate questions.",
+      );
+    } finally {
+      setIsAiGenerating(false);
+    }
+  }
+
+  async function handleAcceptGeneratedQuestions() {
+    if (!generatedQuestions.length) return;
+
+    const canSaveToSet =
+      (form.setMode === "existing"
+        ? !!form.existingSetId
+        : isNewSetIdValid && !!form.newSetName.trim()) || false;
+
+    if (!canSaveToSet) {
+      setAiError("Please choose a set before accepting generated questions.");
+      return;
+    }
+
+    setAiError(null);
+    setAiSuccess(null);
+
+    try {
+      for (const question of generatedQuestions) {
+        const formData = new FormData();
+        formData.set("setMode", form.setMode);
+        if (form.setMode === "existing") {
+          formData.set("existingSetId", form.existingSetId);
+        } else {
+          formData.set("newSetId", form.newSetId.trim());
+          formData.set("newSetName", form.newSetName.trim());
+        }
+        formData.set("questionText", question.questionText.trim());
+        formData.set("explanation", question.explanation.trim());
+        formData.set("correctOptionId", question.correctOptionId);
+        for (const id of OPTION_IDS) {
+          const option = question.options.find((item) => item.id === id);
+          formData.set(`optionText_${id}`, option?.text.trim() ?? "");
+        }
+
+        const res = await fetch("/api/questions", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await res.json();
+
+        if (!res.ok) {
+          throw new Error(result.error ?? "Failed to save generated question.");
+        }
+      }
+
+      setAiSuccess("Generated questions were added to your selected set.");
+      setGeneratedQuestions([]);
+      setAiPrompt("");
+      setIsAiPanelOpen(false);
+    } catch (err) {
+      setAiError(
+        err instanceof Error ? err.message : "Failed to save generated questions.",
+      );
+    }
+  }
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:py-12">
@@ -299,6 +475,246 @@ export default function AddQuestionPage() {
 
         <Card>
           <CardHeader>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <CardTitle>Generate with AI</CardTitle>
+                <CardDescription>
+                  Paste notes, articles, or raw text and turn them into editable
+                  MCQ questions.
+                </CardDescription>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAiPanelOpen((prev) => !prev)}
+              >
+                {isAiPanelOpen ? "Hide" : "Open"}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {!isAiPanelOpen ? (
+              <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+                Paste content to generate questions quickly, then review and
+                accept them for your selected set.
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="ai-prompt">Paste content</Label>
+                  <Textarea
+                    id="ai-prompt"
+                    placeholder="Paste your notes or content here to generate questions..."
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    rows={7}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                  <div className="flex-1 flex flex-col gap-2">
+                    <Label htmlFor="ai-model">Model</Label>
+                    <Select value={aiModel} onValueChange={setAiModel}>
+                      <SelectTrigger id="ai-model" className="w-full">
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gpt-4o-mini">
+                          OpenAI GPT-4o mini
+                        </SelectItem>
+                        <SelectItem value="gpt-4o">OpenAI GPT-4o</SelectItem>
+                        <SelectItem value="claude" disabled>
+                          Claude (coming soon)
+                        </SelectItem>
+                        <SelectItem value="gemini" disabled>
+                          Gemini (coming soon)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleGenerateQuestions}
+                    disabled={!aiPrompt.trim() || isAiGenerating}
+                  >
+                    {isAiGenerating ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="size-4 animate-spin" />
+                        Generating...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Sparkles className="size-4" />
+                        Generate
+                      </span>
+                    )}
+                  </Button>
+                </div>
+
+                {aiError && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {aiError}
+                  </p>
+                )}
+
+                {aiSuccess && (
+                  <div
+                    role="status"
+                    className="flex items-start gap-2 rounded-lg border border-green-600/30 bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-950/40 dark:text-green-300"
+                  >
+                    <CheckCircle2
+                      className="mt-0.5 size-4 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span>{aiSuccess}</span>
+                  </div>
+                )}
+
+                {generatedQuestions.length > 0 && (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/20 px-4 py-3">
+                      <div>
+                        <p className="font-medium">Editable preview</p>
+                        <p className="text-sm text-muted-foreground">
+                          Review each question before accepting it into your set.
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleGenerateQuestions}
+                          disabled={isAiGenerating}
+                        >
+                          Regenerate
+                        </Button>
+                        <Button type="button" onClick={handleAcceptGeneratedQuestions}>
+                          Accept
+                        </Button>
+                      </div>
+                    </div>
+
+                    {generatedQuestions.map((question, questionIndex) => (
+                      <div
+                        key={`${questionIndex}-${question.questionText}`}
+                        className="flex flex-col gap-4 rounded-lg border p-4"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-medium">Question {questionIndex + 1}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Edit before accepting
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Label htmlFor={`generated-question-${questionIndex}`}>
+                            Question text
+                          </Label>
+                          <Textarea
+                            id={`generated-question-${questionIndex}`}
+                            value={question.questionText}
+                            onChange={(e) =>
+                              updateGeneratedQuestion(questionIndex, (prev) => ({
+                                ...prev,
+                                questionText: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Label>Options</Label>
+                          <div className="flex flex-col gap-2">
+                            {question.options.map((option) => (
+                              <div
+                                key={option.id}
+                                className="flex items-center gap-2 rounded-lg border px-3 py-2"
+                              >
+                                <input
+                                  type="radio"
+                                  id={`generated-${questionIndex}-${option.id}`}
+                                  name={`generated-correct-${questionIndex}`}
+                                  checked={question.correctOptionId === option.id}
+                                  onChange={() =>
+                                    updateGeneratedQuestion(questionIndex, (prev) => ({
+                                      ...prev,
+                                      correctOptionId: option.id,
+                                    }))
+                                  }
+                                />
+                                <Label
+                                  htmlFor={`generated-${questionIndex}-${option.id}`}
+                                  className="min-w-16 text-sm"
+                                >
+                                  {option.id.toUpperCase()}
+                                </Label>
+                                <Input
+                                  value={option.text}
+                                  onChange={(e) =>
+                                    updateGeneratedQuestion(questionIndex, (prev) => ({
+                                      ...prev,
+                                      options: prev.options.map((item) =>
+                                        item.id === option.id
+                                          ? { ...item, text: e.target.value }
+                                          : item,
+                                      ),
+                                    }))
+                                  }
+                                  placeholder={`Option ${option.id.toUpperCase()} text`}
+                                />
+                                <button
+                                  type="button"
+                                  className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                  onClick={() =>
+                                    updateGeneratedQuestion(questionIndex, (prev) => ({
+                                      ...prev,
+                                      options: prev.options.map((item) =>
+                                        item.id === option.id
+                                          ? { ...item, text: "" }
+                                          : item,
+                                      ),
+                                    }))
+                                  }
+                                  aria-label={`Clear option ${option.id.toUpperCase()}`}
+                                >
+                                  <Trash2 className="size-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Label htmlFor={`generated-explanation-${questionIndex}`}>
+                            Explanation (optional)
+                          </Label>
+                          <Textarea
+                            id={`generated-explanation-${questionIndex}`}
+                            value={question.explanation}
+                            onChange={(e) =>
+                              updateGeneratedQuestion(questionIndex, (prev) => ({
+                                ...prev,
+                                explanation: e.target.value,
+                              }))
+                            }
+                            placeholder="Explain the correct answer..."
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {!isAiPanelOpen && (
+          <>
+          
+        <Card>
+          <CardHeader>
             <CardTitle>Question</CardTitle>
             <CardDescription>
               Enter the question text and an optional image.
@@ -446,6 +862,8 @@ export default function AddQuestionPage() {
         >
           {isSubmitting ? "Saving…" : "Add Question"}
         </Button>
+        </>
+        )}
       </form>
     </main>
   );
