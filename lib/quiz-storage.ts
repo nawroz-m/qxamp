@@ -13,12 +13,22 @@ export type SanitizedGeneratedQuestion = {
 
 export function normalizeQuestions(value: unknown): QuizQuestion[] {
   if (!value) return []
+
   if (Array.isArray(value)) {
-    return value.filter(Boolean) as QuizQuestion[]
+    return value
+      .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
+      .map((item) => ({ ...(item as unknown as QuizQuestion) }))
   }
+
   if (typeof value === "object" && value !== null) {
-    return Object.values(value).filter(Boolean) as QuizQuestion[]
+    return Object.entries(value as Record<string, unknown>)
+      .filter(([, item]) => typeof item === "object" && item !== null)
+      .map(([firebaseKey, item]) => ({
+        ...(item as unknown as QuizQuestion),
+        firebaseKey,
+      }))
   }
+
   return []
 }
 
@@ -34,7 +44,7 @@ export function normalizeSets(raw: unknown): QuizData {
         .map((set) => ({
           setId: set.setId,
           setName: set.setName,
-          questions: normalizeQuestions(set.questions).sort((a, b) => a.id - b.id),
+          questions: normalizeQuestions(set.questions),
         })),
     }
   }
@@ -46,7 +56,7 @@ export function normalizeSets(raw: unknown): QuizData {
         .map((set) => ({
           setId: set.setId,
           setName: set.setName,
-          questions: normalizeQuestions(set.questions).sort((a, b) => a.id - b.id),
+          questions: normalizeQuestions(set.questions),
         })),
     }
   }
@@ -183,50 +193,24 @@ export async function saveQuestionToSet(setId: string, question: QuizQuestion) {
     throw new Error(`Failed to save question (${response.status})`)
   }
 
-  return { success: true }
+  const savedBody = (await response.json()) as { name?: string }
+
+  return { success: true, firebaseKey: savedBody.name }
 }
 
-export async function saveQuestionsToSet(
-  setId: string,
-  setName: string,
-  questions: QuizQuestion[],
-  existingQuestions: unknown = {},
-) {
+export async function saveQuestionsToSet(setId: string, questions: QuizQuestion[]) {
   if (!questions.length) {
-    return { success: true, count: 0 }
+    return { success: true, count: 0, firebaseKeys: [] as string[] }
   }
 
-  const existingQuestionsPayload =
-    existingQuestions && typeof existingQuestions === "object" && !Array.isArray(existingQuestions)
-      ? (existingQuestions as Record<string, QuizQuestion>)
-      : {}
+  const savedKeys: string[] = []
 
-  const payload = questions.reduce<Record<string, QuizQuestion>>((accumulator, question) => {
-    const questionKey =
-      typeof globalThis.crypto?.randomUUID === "function"
-        ? globalThis.crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`
-
-    accumulator[questionKey] = question
-    return accumulator
-  }, {})
-
-  const response = await fetch(buildDbUrl(`sets/${encodeURIComponent(setId)}`), {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      setId,
-      setName,
-      questions: {
-        ...existingQuestionsPayload,
-        ...payload,
-      },
-    }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to save questions (${response.status})`)
+  for (const question of questions) {
+    const saved = await saveQuestionToSet(setId, question)
+    if (saved.firebaseKey) {
+      savedKeys.push(saved.firebaseKey)
+    }
   }
 
-  return { success: true, count: questions.length }
+  return { success: true, count: questions.length, firebaseKeys: savedKeys }
 }

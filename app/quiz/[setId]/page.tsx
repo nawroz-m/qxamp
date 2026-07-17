@@ -26,7 +26,7 @@ export default function QuizPage() {
   const params = useParams<{ setId: string }>();
   const { data, error, isLoading } = useQuizData();
   // answers maps questionId -> selected option id
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [displayQuestions, setDisplayQuestions] = useState<
     typeof set extends undefined ? any[] : any[]
   >([]);
@@ -41,15 +41,14 @@ export default function QuizPage() {
   const score = useMemo(() => {
     if (!set) return 0;
     return set.questions.reduce(
-      (acc, q) => (answers[q.id] === q.correctOptionId ? acc + 1 : acc),
+      (acc, q) => (answers[(q.firebaseKey ?? "") || String(q.questionText)] === q.correctOptionId ? acc + 1 : acc),
       0,
     );
   }, [set, answers]);
 
-  function handleSelect(questionId: number, optionId: string) {
+  function handleSelect(questionKey: string, optionId: string) {
     setAnswers((prev) => {
-      // if (prev[questionId] !== undefined) return prev; // locked
-      return { ...prev, [questionId]: optionId };
+      return { ...prev, [questionKey]: optionId };
     });
   }
 
@@ -104,7 +103,7 @@ export default function QuizPage() {
           Loading questions…
         </p>
       )}
-      {error && (
+      {error instanceof Error && (
         <p className="text-center text-sm text-destructive">
           Failed to load quiz data.
         </p>
@@ -139,15 +138,18 @@ export default function QuizPage() {
           </header>
 
           <div className="flex flex-col gap-5">
-            {displayQuestions.map((question, index) => (
-              <QuestionCard
-                key={question.id}
-                question={question}
-                index={index}
-                selectedOptionId={answers[question.id]}
-                onSelect={(optionId) => handleSelect(question.id, optionId)}
-              />
-            ))}
+            {displayQuestions.map((question, index) => {
+              const questionKey = question.firebaseKey ?? `${question.questionText}-${index}`;
+              return (
+                <QuestionCard
+                  key={questionKey}
+                  question={question}
+                  index={index}
+                  selectedOptionId={answers[questionKey]}
+                  onSelect={(optionId) => handleSelect(questionKey, optionId)}
+                />
+              );
+            })}
           </div>
         </>
       )}

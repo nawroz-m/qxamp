@@ -5,7 +5,7 @@ export interface QuizOption {
 }
 
 export interface QuizQuestion {
-  id: number
+  firebaseKey?: string
   questionText: string
   questionImage?: string
   options: QuizOption[]

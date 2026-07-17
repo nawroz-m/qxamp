@@ -109,11 +109,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message }, { status: 500 })
     }
 
-    const questionId =
-      targetSet.questions.length > 0 ? Math.max(...targetSet.questions.map((q) => q.id)) + 1 : 1
+    const imageSuffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
     const question: QuizQuestion = {
-      id: questionId,
       questionText: questionText.trim(),
       options: OPTION_IDS.map((id) => ({ id, text: optionTexts[id] })),
       correctOptionId,
@@ -125,19 +123,19 @@ export async function POST(request: NextRequest) {
 
     const questionImage = formData.get("questionImage")
     if (questionImage instanceof File && questionImage.size > 0) {
-      question.questionImage = await saveImage(questionImage, "questions", String(questionId))
+      question.questionImage = await saveImage(questionImage, "questions", imageSuffix)
     }
 
     const explanationImage = formData.get("explanationImage")
     if (explanationImage instanceof File && explanationImage.size > 0) {
-      question.explanationImage = await saveImage(explanationImage, "explanations", String(questionId))
+      question.explanationImage = await saveImage(explanationImage, "explanations", imageSuffix)
     }
 
     for (const id of OPTION_IDS) {
       const optionImage = formData.get(`optionImage_${id}`)
       if (optionImage instanceof File && optionImage.size > 0) {
         const option = question.options.find((o) => o.id === id)!
-        option.img = await saveImage(optionImage, "options", `${questionId}-${id}`)
+        option.img = await saveImage(optionImage, "options", `${imageSuffix}-${id}`)
       }
     }
 
@@ -149,7 +147,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      questionId,
+      questionId: saved.firebaseKey ?? "new-question",
       setId: targetSet.setId,
       setName: targetSet.setName,
     })

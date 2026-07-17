@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 // ---- Types ----
 type Option = { id: "a" | "b" | "c" | "d"; text: string };
 type Question = {
-  id: number;
   questionText: string;
   options: Option[];
   correctOptionId: "a" | "b" | "c" | "d";
@@ -32,7 +31,6 @@ Requirements:
 
 [
   {
-    "id": 1,
     "questionText": "According to Henry's Law, the concentration of a gas dissolved in seawater is:",
     "options": [
       { "id": "a", "text": "Inversely proportional to its partial pressure above the sea" },
@@ -130,10 +128,6 @@ function validateGeneratedPayload(payload: unknown):
     }
     const obj = q as Record<string, unknown>;
 
-    if (typeof obj.id !== "number") {
-      errors.push(`Question ${i}: missing or invalid 'id'.`);
-      return;
-    }
     if (typeof obj.questionText !== "string" || !obj.questionText.trim()) {
       errors.push(`Question ${i}: missing or invalid 'questionText'.`);
       return;
@@ -173,7 +167,6 @@ function validateGeneratedPayload(payload: unknown):
     }
 
     questions.push({
-      id: obj.id as number,
       questionText: obj.questionText as string,
       options,
       correctOptionId: obj.correctOptionId as Option["id"],

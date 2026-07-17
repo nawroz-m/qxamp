@@ -75,6 +75,7 @@ export default function AddQuestionPage() {
   const [generatedQuestions, setGeneratedQuestions] = useState<GeneratedQuestion[]>([]);
 
   const existingSetIds = data?.sets.map((s) => s.setId) ?? [];
+  const hasQuizDataError = error !== undefined;
   const trimmedNewSetId = form.newSetId.trim();
   const isNewSetIdDuplicate =
     form.setMode === "new" &&
@@ -201,9 +202,10 @@ export default function AddQuestionPage() {
         throw new Error(result.error ?? "Failed to generate questions.");
       }
 
-      const nextQuestions = (result.questions ?? [])
+      const generatedItems: unknown[] = Array.isArray(result.questions) ? result.questions : [];
+      const nextQuestions = generatedItems
         .map((item: unknown) => sanitizeGeneratedQuestion(item))
-        .filter((item): item is GeneratedQuestion => Boolean(item));
+        .filter((item: GeneratedQuestion | null): item is GeneratedQuestion => Boolean(item));
 
       if (nextQuestions.length === 0) {
         throw new Error("No questions were returned.");
@@ -325,7 +327,7 @@ export default function AddQuestionPage() {
             {isLoading && (
               <p className="text-sm text-muted-foreground">Loading sets…</p>
             )}
-            {error && (
+            {hasQuizDataError && (
               <p className="text-sm text-destructive">
                 Failed to load sets. Please refresh the page.
               </p>
@@ -460,7 +462,10 @@ export default function AddQuestionPage() {
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
                   <div className="flex-1 flex flex-col gap-2">
                     <Label htmlFor="ai-model">Model</Label>
-                    <Select value={aiModel} onValueChange={setAiModel}>
+                    <Select
+                      value={aiModel}
+                      onValueChange={(value) => setAiModel(value ?? "gpt-4o-mini")}
+                    >
                       <SelectTrigger id="ai-model" className="w-full">
                         <SelectValue placeholder="Select a model" />
                       </SelectTrigger>

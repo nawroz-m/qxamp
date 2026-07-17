@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { buildDbUrl } from "@/lib/firebase"
-import { ensureSetTarget, normalizeQuestions, saveQuestionsToSet } from "@/lib/quiz-storage"
+import { ensureSetTarget, saveQuestionsToSet } from "@/lib/quiz-storage"
 import type { QuizQuestion } from "@/lib/quiz-types"
 
 type IncomingQuestion = {
@@ -11,7 +11,7 @@ type IncomingQuestion = {
   explanation?: string
 }
 
-function toQuizQuestion(question: IncomingQuestion, fallbackId: number): QuizQuestion {
+function toQuizQuestion(question: IncomingQuestion): QuizQuestion {
   const optionIds = ["a", "b", "c", "d"] as const
   const safeOptions = (question.options ?? []).slice(0, 4)
   const options = optionIds.map((id, index) => ({
@@ -25,7 +25,6 @@ function toQuizQuestion(question: IncomingQuestion, fallbackId: number): QuizQue
       : optionIds[0]
 
   return {
-    id: fallbackId,
     questionText: question.questionText?.trim() ?? "",
     options,
     correctOptionId,
@@ -39,7 +38,7 @@ export async function POST(request: NextRequest) {
     const setMode = payload?.setMode === "new" ? "new" : "existing"
     const setName = typeof payload?.setName === "string" ? payload.setName.trim() : ""
     const setId = typeof payload?.setId === "string" ? payload.setId.trim() : ""
-    const rawQuestions = Array.isArray(payload?.questions) ? payload.questions : []
+    const rawQuestions: IncomingQuestion[] = Array.isArray(payload?.questions) ? payload.questions : []
 
     if (!rawQuestions.length) {
       return NextResponse.json({ error: "No questions were provided" }, { status: 400 })
@@ -61,17 +60,11 @@ export async function POST(request: NextRequest) {
       setsById,
     })
 
-    const existingQuestions = normalizeQuestions((resolved.targetSet as { questions?: unknown }).questions)
-    const nextQuestions = rawQuestions.map((question, index) =>
-      toQuizQuestion(question as IncomingQuestion, existingQuestions.length + index + 1),
+    const nextQuestions = rawQuestions.map((question: IncomingQuestion): QuizQuestion =>
+      toQuizQuestion(question),
     )
 
-    const saveResult = await saveQuestionsToSet(
-      resolved.targetSet.setId,
-      resolved.targetSet.setName,
-      nextQuestions,
-      existingQuestions,
-    )
+    const saveResult = await saveQuestionsToSet(resolved.targetSet.setId, nextQuestions)
 
     return NextResponse.json({
       success: true,
