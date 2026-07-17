@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
   try {
     const { content, model, count } = await request.json();
     const promptContent = typeof content === "string" ? content.trim() : "";
-    const questionCount = Math.min(Math.max(Number(count) || 5, 1), 20);
+    const questionCount = Math.min(Math.max(Number(count) || 4, 1), 10);
 
     if (!promptContent) {
       return NextResponse.json({ error: "Please provide content to generate questions from." }, { status: 400 });

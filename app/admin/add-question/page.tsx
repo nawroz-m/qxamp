@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Info, Loader2, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Info, Loader2, Sparkles, Trash2, Wand2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -74,6 +74,7 @@ export default function AddQuestionPage() {
   const [aiSuccess, setAiSuccess] = useState<string | null>(null);
   const [generatedQuestions, setGeneratedQuestions] = useState<GeneratedQuestion[]>([]);
 
+  const [questionCount, setQuestionCount] = useState<number>(4);
   const existingSetIds = data?.sets.map((s) => s.setId) ?? [];
   const hasQuizDataError = error !== undefined;
   const trimmedNewSetId = form.newSetId.trim();
@@ -194,7 +195,7 @@ export default function AddQuestionPage() {
       const res = await fetch("/api/ai-generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: aiPrompt.trim(), model: aiModel }),
+        body: JSON.stringify({ content: aiPrompt.trim(), model: aiModel, count: questionCount }),
       });
       const result = await res.json();
 
@@ -344,14 +345,14 @@ export default function AddQuestionPage() {
                       <SelectValue placeholder="Select a question set" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value={NEW_SET_VALUE} className='bg-muted/50 py-2 cursor-pointer hover:bg-muted/70'>
+                        Create New Set
+                      </SelectItem>
                       {data.sets.map((set) => (
-                        <SelectItem key={set.setId} value={set.setId}>
+                        <SelectItem key={set.setId} value={set.setId} className="cursor-pointer hover:bg-muted/50">
                           {set.setName}
                         </SelectItem>
                       ))}
-                      <SelectItem value={NEW_SET_VALUE}>
-                        Create New Set
-                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -424,7 +425,16 @@ export default function AddQuestionPage() {
           <CardHeader>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <CardTitle>Generate with AI</CardTitle>
+                  <CardTitle className="flex gap-1">
+                    <span>
+                      Generate with AI
+                    </span>
+                    <div className="mt-1 flex items-center gap-1.5 text-muted-foreground">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <Wand2 className="h-3.5 w-3.5" />
+                      <Zap className="h-3.5 w-3.5" />
+                    </div>
+                  </CardTitle> 
                 <CardDescription>
                   Paste notes, articles, or raw text and turn them into editable
                   MCQ questions.
@@ -440,6 +450,27 @@ export default function AddQuestionPage() {
               </Button>
             </div>
           </CardHeader>
+          {isAiPanelOpen && (
+            <div className="flex flex-col gap-2 px-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                  <Label htmlFor="ai-question-count">Number of questions</Label>
+                  <Select
+                    value={String(questionCount)}
+                    onValueChange={(val) => setQuestionCount(Number(val))} 
+                  >
+                    <SelectTrigger id="ai-question-count">
+                      <SelectValue placeholder="Select count" />
+                    </SelectTrigger>
+                    <SelectContent className="">
+                      {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                        <SelectItem key={n} value={String(n)} className="">
+                          {n}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+            </div>
+          )}
+
           <CardContent className="flex flex-col gap-4">
             {!isAiPanelOpen ? (
               <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
