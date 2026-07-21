@@ -33,10 +33,17 @@ export default function HomePage() {
             QXAMP
           </h1>
         </span>
-        <p className="max-w-md text-pretty leading-relaxed text-muted-foreground">
-          Choose a question set below to start. Answer each question and get
-          instant feedback with explanations.
+        <h2 className="text-balance  font-semibold leading-relaxed">
+          Turn What You Learn Into What You Remember
+        </h2>
+        <p  className="sr-only max-w-md text-pretty leading-relaxed text-muted-foreground">
+          QXAMP transforms your notes, articles, and study material into interactive quizzes — instantly.
+          Paste your content, choose how many questions you want, and let AI turn it into a quiz you can revisit anytime, anywhere.
         </p>
+        <p className="sr-only max-w-md text-pretty leading-relaxed text-muted-foreground">
+          Every quiz you create joins a growing, community-built library — anonymous,
+          open, and free for anyone curious enough to learn something new by simply answering a question.
+          </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button variant="outline" size="lg">
             <Link href="/admin/add-question" className="p-4 flex gap-2">

@@ -3,10 +3,13 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "QXAMP - MCQ Quiz App",
+  title: "QXAMP - Learn by Quizzing. Remember by Repeating.",
   description:
-    "A simple multiple-choice quiz app with instant feedback and explanations.",
-  generator: "QXAMP Development",
+    ` Paste your notes, generate quizzes with AI, 
+      and turn studying into a habit that sticks. Anonymous, 
+      community-built, and free to explore.
+    `,
+  generator: "Built by the QXAMP Community",
   icons: {
     icon: [
       {
