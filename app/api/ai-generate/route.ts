@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authenticateRequest, enforceOpenAiLimit } from "@/lib/auth-server";
 
 // ---- Types ----
 type Option = { id: "a" | "b" | "c" | "d"; text: string };
@@ -198,6 +199,12 @@ export async function POST(request: NextRequest) {
   let rawContent = "";
 
   try {
+    const user = await authenticateRequest(request);
+    const limitCheck = await enforceOpenAiLimit(request, user);
+    if (!limitCheck.allowed) {
+      return NextResponse.json({ error: limitCheck.error }, { status: limitCheck.status });
+    }
+
     const { content, model, count } = await request.json();
     const promptContent = typeof content === "string" ? content.trim() : "";
     const questionCount = Math.min(Math.max(Number(count) || 4, 1), 10);

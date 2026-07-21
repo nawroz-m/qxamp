@@ -5,9 +5,16 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SetCard } from "@/components/set-card";
 import { useQuizData } from "@/lib/use-quiz-data";
+import { AuthNav } from "@/components/auth-nav";
 
 export default function HomePage() {
   const { data, error, isLoading } = useQuizData();
+  const hasQuizError = error !== undefined;
+  const quizError = typeof error === "string"
+    ? error
+    : error instanceof Error
+      ? error.message
+      : "Failed to load quiz data. Please try again.";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 px-4 py-12 sm:py-16">
@@ -30,12 +37,15 @@ export default function HomePage() {
           Choose a question set below to start. Answer each question and get
           instant feedback with explanations.
         </p>
-        <Button variant="outline" size="lg">
-          <Link href="/admin/add-question" className="p-4 flex gap-2">
-            <Plus className="size-4" aria-hidden="true" />{" "}
-            <span>Add Question</span>
-          </Link>
-        </Button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Button variant="outline" size="lg">
+            <Link href="/admin/add-question" className="p-4 flex gap-2">
+              <Plus className="size-4" aria-hidden="true" />{" "}
+              <span>Add Question</span>
+            </Link>
+          </Button>
+          <AuthNav />
+        </div>
       </header>
 
       <section aria-label="Available quiz sets">
@@ -44,10 +54,8 @@ export default function HomePage() {
             Loading question sets…
           </p>
         )}
-        {error && (
-          <p className="text-center text-sm text-destructive">
-            Failed to load quiz data. Please try again.
-          </p>
+        {hasQuizError && (
+          <p className="text-center text-sm text-destructive">{quizError}</p>
         )}
         {data && (
           <div className="grid gap-4 sm:grid-cols-2">

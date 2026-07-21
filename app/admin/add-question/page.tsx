@@ -24,6 +24,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useQuizData } from "@/lib/use-quiz-data";
 import { sanitizeGeneratedQuestion } from "@/lib/quiz-storage";
+import { getAuthHeaders } from "@/lib/auth-client";
+import { AuthNav } from "@/components/auth-nav";
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const;
 const NEW_SET_VALUE = "__new__";
@@ -192,9 +194,10 @@ export default function AddQuestionPage() {
     setAiSuccess(null);
 
     try {
+      const authHeaders = getAuthHeaders();
       const res = await fetch("/api/ai-generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify({ content: aiPrompt.trim(), model: aiModel, count: questionCount }),
       });
       const result = await res.json();
@@ -284,6 +287,7 @@ export default function AddQuestionPage() {
             <span>Back to Sets</span>
           </Link>
         </Button>
+        <AuthNav />
       </div>
 
       <header className="flex flex-col gap-2">
@@ -461,7 +465,7 @@ export default function AddQuestionPage() {
                       <SelectValue placeholder="Select count" />
                     </SelectTrigger>
                     <SelectContent className="">
-                      {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                      {Array.from({ length: 100 }, (_, i) => i + 1).map((n) => (
                         <SelectItem key={n} value={String(n)} className="">
                           {n}
                         </SelectItem>
@@ -534,9 +538,14 @@ export default function AddQuestionPage() {
                 </div>
 
                 {aiError && (
-                  <p role="alert" className="text-sm text-destructive">
-                    {aiError}
-                  </p>
+                  <div role="alert" className="text-sm text-destructive">
+                    <p>{aiError}</p>
+                    {aiError.includes("sign in") && (
+                      <Link href="/auth?mode=signin" className="mt-2 inline-flex font-medium underline-offset-4 hover:underline">
+                        Sign in to continue
+                      </Link>
+                    )}
+                  </div>
                 )}
 
                 {aiSuccess && (
