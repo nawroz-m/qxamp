@@ -425,18 +425,20 @@ export default function AddQuestionPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-double border-indigo-500/100">
           <CardHeader>
-            <div className="flex items-start justify-between gap-3">
-              <div>
+            <div className="flex items-start justify-between gap-3 cursor-pointer">
+              <div onClick={() => setIsAiPanelOpen((prev) => !prev)} className="cursor-pointer ">
                   <CardTitle className="flex gap-1">
                     <span>
-                      Generate with AI
+                      Generate with
                     </span>
-                    <div className="mt-1 flex items-center gap-1.5 text-muted-foreground">
-                      <Sparkles className="h-3.5 w-3.5" />
-                      <Wand2 className="h-3.5 w-3.5" />
-                      <Zap className="h-3.5 w-3.5" />
+                    
+                    <div className="flex items-center gap-1.5">
+                      <img src="/claude-color.svg" alt="Claude" className="size-5" />
+                      <img src="/gemini-color.svg" alt="Gemini" className="size-5" />
+                      <img src="/openai.svg" alt="GPT" className="size-5" />
+                      <img src="/ollama.svg" alt="LLaMA" className="size-5" /> 
                     </div>
                   </CardTitle> 
                 <CardDescription>
@@ -449,13 +451,14 @@ export default function AddQuestionPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsAiPanelOpen((prev) => !prev)}
+                className="cursor-pointer"
               >
                 {isAiPanelOpen ? "Hide" : "Open"}
               </Button>
             </div>
           </CardHeader>
           {isAiPanelOpen && (
-            <div className="flex flex-col gap-2 px-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-row gap-2 px-4 pt-2 justify-between">
                   <Label htmlFor="ai-question-count">Number of questions</Label>
                   <Select
                     value={String(questionCount)}
@@ -465,7 +468,7 @@ export default function AddQuestionPage() {
                       <SelectValue placeholder="Select count" />
                     </SelectTrigger>
                     <SelectContent className="">
-                      {Array.from({ length: 100 }, (_, i) => i + 1).map((n) => (
+                      {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
                         <SelectItem key={n} value={String(n)} className="">
                           {n}
                         </SelectItem>
@@ -477,7 +480,9 @@ export default function AddQuestionPage() {
 
           <CardContent className="flex flex-col gap-4">
             {!isAiPanelOpen ? (
-              <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+              <div
+              onClick={() => setIsAiPanelOpen((prev) => !prev)}
+               className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground cursor-pointer hover:bg-muted/50">
                 Paste content to generate questions quickly, then review and
                 accept them for your selected set.
               </div>

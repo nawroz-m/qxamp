@@ -52,27 +52,6 @@ CONTENT:
 ${content}`;
 }
 
-
-
-// function extractJsonPayload(raw: string): unknown {
-//   const trimmed = raw.trim();
-//   const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-//   const candidate = fencedMatch ? fencedMatch[1] : trimmed;
-//   const firstBrace = candidate.indexOf("{");
-//   const lastBrace = candidate.lastIndexOf("}");
-//   const firstBracket = candidate.indexOf("[");
-//   const lastBracket = candidate.lastIndexOf("]");
-
-//   if (firstBrace !== -1 && lastBrace !== -1 && firstBrace < lastBrace) {
-//     return JSON.parse(candidate.slice(firstBrace, lastBrace + 1));
-//   }
-
-//   if (firstBracket !== -1 && lastBracket !== -1 && firstBracket < lastBracket) {
-//     return JSON.parse(candidate.slice(firstBracket, lastBracket + 1));
-//   }
-
-//   return JSON.parse(candidate);
-// }
 // ---- Safe JSON extraction (returns null instead of throwing) ----
 function extractJsonPayload(raw: string): unknown | null {
   const trimmed = raw.trim();
@@ -180,19 +159,6 @@ function validateGeneratedPayload(payload: unknown):
   }
 
   return { valid: true, questions, note };
-}
-
-
-function normalizeQuestions(payload: unknown) {
-  if (Array.isArray(payload)) {
-    return payload;
-  }
-
-  if (payload && typeof payload === "object" && Array.isArray((payload as Record<string, unknown>).questions)) {
-    return (payload as Record<string, unknown>).questions;
-  }
-
-  return [];
 }
 
 export async function POST(request: NextRequest) {
