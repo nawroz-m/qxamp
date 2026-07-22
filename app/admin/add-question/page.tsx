@@ -497,6 +497,7 @@ export default function AddQuestionPage() {
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
                     rows={7}
+                    className="max-h-100"
                   />
                 </div>
 
