@@ -18,6 +18,8 @@ export interface QuizSet {
   setId: string
   setName: string
   questions: QuizQuestion[]
+  createdBy?: string
+  createdAt?: number
 }
 
 export interface QuizData {

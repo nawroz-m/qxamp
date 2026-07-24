@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { buildDbUrl } from "@/lib/firebase"
 import { ensureSetTarget, saveQuestionsToSet } from "@/lib/quiz-storage"
 import type { QuizQuestion } from "@/lib/quiz-types"
+import { authenticateRequest } from "@/lib/auth-server"
 
 type IncomingQuestion = {
   questionText?: string
@@ -51,12 +52,14 @@ export async function POST(request: NextRequest) {
 
     const rawSets = await response.json()
     const setsById = typeof rawSets === "object" && rawSets !== null ? rawSets : {}
+    const authUser = await authenticateRequest(request)
 
     const resolved = await ensureSetTarget({
       setMode,
       existingSetId: setMode === "existing" ? setId : null,
       newSetId: setMode === "new" ? setId : null,
       newSetName: setMode === "new" ? setName : null,
+      createdBy: authUser?.uid ?? null,
       setsById,
     })
 

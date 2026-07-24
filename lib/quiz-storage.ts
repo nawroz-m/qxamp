@@ -45,6 +45,8 @@ export function normalizeSets(raw: unknown): QuizData {
           setId: set.setId,
           setName: set.setName,
           questions: normalizeQuestions(set.questions),
+          createdBy: typeof set.createdBy === "string" ? set.createdBy : undefined,
+          createdAt: typeof set.createdAt === "number" ? set.createdAt : undefined,
         })),
     }
   }
@@ -57,6 +59,8 @@ export function normalizeSets(raw: unknown): QuizData {
           setId: set.setId,
           setName: set.setName,
           questions: normalizeQuestions(set.questions),
+          createdBy: typeof set.createdBy === "string" ? set.createdBy : undefined,
+          createdAt: typeof set.createdAt === "number" ? set.createdAt : undefined,
         })),
     }
   }
@@ -124,9 +128,10 @@ export async function ensureSetTarget(params: {
   existingSetId?: string | null
   newSetId?: string | null
   newSetName?: string | null
+  createdBy?: string | null
   setsById: Record<string, unknown>
 }): Promise<{ targetSet: QuizSet; created: boolean; setRecord: Record<string, unknown> | null }> {
-  const { setMode, existingSetId, newSetId, newSetName, setsById } = params
+  const { setMode, existingSetId, newSetId, newSetName, createdBy, setsById } = params
 
   if (setMode === "new") {
     if (!newSetId?.trim() || !newSetName?.trim()) {
@@ -138,10 +143,20 @@ export async function ensureSetTarget(params: {
       throw new Error("A set with this ID already exists")
     }
 
+    const createdAt = Date.now()
+    const setPayload: Record<string, unknown> = {
+      setId,
+      setName: newSetName.trim(),
+      createdAt,
+    }
+    if (createdBy?.trim()) {
+      setPayload.createdBy = createdBy.trim()
+    }
+
     const createResponse = await fetch(buildDbUrl(`sets/${encodeURIComponent(setId)}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ setId, setName: newSetName.trim() }),
+      body: JSON.stringify(setPayload),
     })
 
     if (!createResponse.ok) {
@@ -149,9 +164,15 @@ export async function ensureSetTarget(params: {
     }
 
     return {
-      targetSet: { setId, setName: newSetName.trim(), questions: [] },
+      targetSet: {
+        setId,
+        setName: newSetName.trim(),
+        questions: [],
+        createdBy: createdBy?.trim() || undefined,
+        createdAt,
+      },
       created: true,
-      setRecord: { setId, setName: newSetName.trim(), questions: {} },
+      setRecord: { ...setPayload, questions: {} },
     }
   }
 

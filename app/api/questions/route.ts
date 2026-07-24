@@ -4,6 +4,7 @@ import path from "path"
 import type { QuizQuestion, QuizSet } from "@/lib/quiz-types"
 import { buildDbUrl } from "@/lib/firebase"
 import { ensureSetTarget, normalizeQuestions, normalizeSets, saveQuestionToSet } from "@/lib/quiz-storage"
+import { authenticateRequest } from "@/lib/auth-server"
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const
 
@@ -82,6 +83,7 @@ export async function POST(request: NextRequest) {
 
     const rawSets = await response.json()
     const setsById = typeof rawSets === "object" && rawSets !== null ? rawSets : {}
+    const authUser = await authenticateRequest(request)
 
     let targetSet: QuizSet
 
@@ -91,6 +93,7 @@ export async function POST(request: NextRequest) {
         existingSetId,
         newSetId,
         newSetName,
+        createdBy: authUser?.uid ?? null,
         setsById,
       })
       targetSet = resolved.targetSet
