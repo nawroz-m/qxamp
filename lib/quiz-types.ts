@@ -20,6 +20,10 @@ export interface QuizSet {
   questions: QuizQuestion[]
   createdBy?: string
   createdAt?: number
+  /** Lowercase topic tags; omitted on legacy sets. */
+  tags?: string[]
+  /** Relative path under /public, e.g. "/SetCoverAI.png". */
+  coverImage?: string
 }
 
 export interface QuizData {

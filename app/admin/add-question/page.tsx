@@ -25,7 +25,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQuizData } from "@/lib/use-quiz-data";
 import { sanitizeGeneratedQuestion } from "@/lib/quiz-storage";
 import { getAuthHeaders } from "@/lib/auth-client";
-import { AuthNav } from "@/components/auth-nav";
+import { CoverImagePicker } from "@/components/cover-image-picker";
+import { TagInput } from "@/components/tag-input";
+import { DEFAULT_COVER_IMAGE } from "@/lib/cover-images";
+import { invalidateSearchIndexCache } from "@/lib/use-search";
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const;
 const NEW_SET_VALUE = "__new__";
@@ -54,6 +57,8 @@ const initialForm = {
   existingSetId: "",
   newSetId: "",
   newSetName: "",
+  tags: [] as string[],
+  coverImage: DEFAULT_COVER_IMAGE,
   questionText: "",
   explanation: "",
   correctOptionId: "" as OptionId | "",
@@ -118,6 +123,8 @@ export default function AddQuestionPage() {
         existingSetId: value,
         newSetId: "",
         newSetName: "",
+        tags: [],
+        coverImage: DEFAULT_COVER_IMAGE,
       }));
     }
   }
@@ -143,6 +150,8 @@ export default function AddQuestionPage() {
     } else {
       formData.set("newSetId", form.newSetId.trim());
       formData.set("newSetName", form.newSetName.trim());
+      formData.set("tags", JSON.stringify(form.tags));
+      formData.set("coverImage", form.coverImage);
     }
     formData.set("questionText", form.questionText.trim());
     formData.set("explanation", form.explanation.trim());
@@ -164,6 +173,7 @@ export default function AddQuestionPage() {
       setSuccessMessage(
         `Question #${result.questionId} added to "${result.setName}" successfully.`,
       );
+      invalidateSearchIndexCache();
       resetForm();
     } catch {
       setSubmitError("Failed to save question. Please try again.");
@@ -248,6 +258,8 @@ export default function AddQuestionPage() {
         setMode: form.setMode,
         setName: form.setMode === "new" ? form.newSetName.trim() : undefined,
         setId: form.setMode === "new" ? form.newSetId.trim() : form.existingSetId,
+        tags: form.setMode === "new" ? form.tags : undefined,
+        coverImage: form.setMode === "new" ? form.coverImage : undefined,
         questions: generatedQuestions.map((question) => ({
           questionText: question.questionText.trim(),
           options: question.options.map((option) => ({ id: option.id, text: option.text.trim() })),
@@ -268,6 +280,7 @@ export default function AddQuestionPage() {
       }
 
       setAiSuccess(`Generated questions were added to "${result.setName}" successfully.`);
+      invalidateSearchIndexCache();
       setGeneratedQuestions([]);
       setAiPrompt("");
       setIsAiPanelOpen(false);
@@ -287,7 +300,6 @@ export default function AddQuestionPage() {
             <span>Back to Sets</span>
           </Link>
         </Button>
-        <AuthNav />
       </div>
 
       <header className="flex flex-col gap-2">
@@ -362,62 +374,78 @@ export default function AddQuestionPage() {
                 </div>
 
                 {form.setMode === "new" && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-1.5">
-                        <Label htmlFor="newSetId">Set ID</Label>
-                        <button
-                          type="button"
-                          className="inline-flex text-muted-foreground hover:text-foreground"
-                          title="Use only lowercase letters, numbers, hyphens, or underscores. No spaces or special characters allowed."
-                          aria-label="Set ID format rules"
-                        >
-                          <Info className="size-3.5" aria-hidden="true" />
-                        </button>
+                  <div className="flex flex-col gap-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <Label htmlFor="newSetId">Set ID</Label>
+                          <button
+                            type="button"
+                            className="inline-flex text-muted-foreground hover:text-foreground"
+                            title="Use only lowercase letters, numbers, hyphens, or underscores. No spaces or special characters allowed."
+                            aria-label="Set ID format rules"
+                          >
+                            <Info className="size-3.5" aria-hidden="true" />
+                          </button>
+                        </div>
+                        <Input
+                          id="newSetId"
+                          name="newSetId"
+                          placeholder="e.g. set3"
+                          value={form.newSetId}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              newSetId: sanitizeSetId(e.target.value),
+                            }))
+                          }
+                          aria-invalid={!!newSetIdError}
+                          aria-describedby={
+                            newSetIdError ? "newSetId-error" : undefined
+                          }
+                          required
+                        />
+                        {newSetIdError && (
+                          <p
+                            id="newSetId-error"
+                            role="alert"
+                            className="text-sm text-destructive"
+                          >
+                            {newSetIdError}
+                          </p>
+                        )}
                       </div>
-                      <Input
-                        id="newSetId"
-                        name="newSetId"
-                        placeholder="e.g. set3"
-                        value={form.newSetId}
-                        onChange={(e) =>
-                          setForm((prev) => ({
-                            ...prev,
-                            newSetId: sanitizeSetId(e.target.value),
-                          }))
-                        }
-                        aria-invalid={!!newSetIdError}
-                        aria-describedby={
-                          newSetIdError ? "newSetId-error" : undefined
-                        }
-                        required
-                      />
-                      {newSetIdError && (
-                        <p
-                          id="newSetId-error"
-                          role="alert"
-                          className="text-sm text-destructive"
-                        >
-                          {newSetIdError}
-                        </p>
-                      )}
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="newSetName">Set Name</Label>
+                        <Input
+                          id="newSetName"
+                          name="newSetName"
+                          placeholder="e.g. History Basics"
+                          value={form.newSetName}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              newSetName: e.target.value,
+                            }))
+                          }
+                          required
+                        />
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor="newSetName">Set Name</Label>
-                      <Input
-                        id="newSetName"
-                        name="newSetName"
-                        placeholder="e.g. History Basics"
-                        value={form.newSetName}
-                        onChange={(e) =>
-                          setForm((prev) => ({
-                            ...prev,
-                            newSetName: e.target.value,
-                          }))
-                        }
-                        required
-                      />
-                    </div>
+
+                    <TagInput
+                      value={form.tags}
+                      onChange={(tags) =>
+                        setForm((prev) => ({ ...prev, tags }))
+                      }
+                    />
+
+                    <CoverImagePicker
+                      value={form.coverImage}
+                      onChange={(coverImage) =>
+                        setForm((prev) => ({ ...prev, coverImage }))
+                      }
+                    />
                   </div>
                 )}
               </>

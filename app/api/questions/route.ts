@@ -3,8 +3,10 @@ import { promises as fs } from "fs"
 import path from "path"
 import type { QuizQuestion, QuizSet } from "@/lib/quiz-types"
 import { buildDbUrl } from "@/lib/firebase"
-import { ensureSetTarget, normalizeQuestions, normalizeSets, saveQuestionToSet } from "@/lib/quiz-storage"
+import { ensureSetTarget, normalizeSets, saveQuestionToSet } from "@/lib/quiz-storage"
 import { authenticateRequest } from "@/lib/auth-server"
+import { normalizeTags } from "@/lib/search-index"
+import { resolveCoverImage } from "@/lib/cover-images"
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const
 
@@ -55,9 +57,25 @@ export async function POST(request: NextRequest) {
     const existingSetId = formData.get("existingSetId") as string | null
     const newSetId = formData.get("newSetId") as string | null
     const newSetName = formData.get("newSetName") as string | null
+    const tagsRaw = formData.get("tags")
+    const coverImageRaw = formData.get("coverImage")
     const questionText = formData.get("questionText") as string
     const explanation = formData.get("explanation") as string | null
     const correctOptionId = formData.get("correctOptionId") as string
+
+    let parsedTags: string[] = []
+    if (typeof tagsRaw === "string" && tagsRaw.trim()) {
+      try {
+        parsedTags = normalizeTags(JSON.parse(tagsRaw))
+      } catch {
+        parsedTags = normalizeTags(tagsRaw.split(","))
+      }
+    }
+
+    const coverImage =
+      typeof coverImageRaw === "string" && coverImageRaw.trim()
+        ? resolveCoverImage(coverImageRaw)
+        : undefined
 
     if (!questionText?.trim()) {
       return NextResponse.json({ error: "Question text is required" }, { status: 400 })
@@ -94,6 +112,8 @@ export async function POST(request: NextRequest) {
         newSetId,
         newSetName,
         createdBy: authUser?.uid ?? null,
+        tags: setMode === "new" ? parsedTags : null,
+        coverImage: setMode === "new" ? coverImage : null,
         setsById,
       })
       targetSet = resolved.targetSet

@@ -1,5 +1,24 @@
 import { buildDbUrl } from "@/lib/firebase"
-import type { QuizData, QuizOption, QuizQuestion, QuizSet } from "@/lib/quiz-types"
+import { resolveCoverImage } from "@/lib/cover-images"
+import {
+  buildSearchIndexEntry,
+  normalizeTags,
+  upsertSearchIndexEntry,
+} from "@/lib/search-index"
+import type { QuizData, QuizQuestion, QuizSet } from "@/lib/quiz-types"
+
+function readOptionalSetMeta(set: Record<string, unknown>): Pick<QuizSet, "tags" | "coverImage"> {
+  const tags = normalizeTags(set.tags)
+  const coverImage =
+    typeof set.coverImage === "string" && set.coverImage.trim()
+      ? resolveCoverImage(set.coverImage)
+      : undefined
+
+  return {
+    ...(tags.length ? { tags } : {}),
+    ...(coverImage ? { coverImage } : {}),
+  }
+}
 
 export const OPTION_IDS = ["a", "b", "c", "d"] as const
 export type OptionId = (typeof OPTION_IDS)[number]
@@ -41,13 +60,17 @@ export function normalizeSets(raw: unknown): QuizData {
     return {
       sets: raw
         .filter((item): item is QuizSet => typeof item === "object" && item !== null && "setId" in item)
-        .map((set) => ({
-          setId: set.setId,
-          setName: set.setName,
-          questions: normalizeQuestions(set.questions),
-          createdBy: typeof set.createdBy === "string" ? set.createdBy : undefined,
-          createdAt: typeof set.createdAt === "number" ? set.createdAt : undefined,
-        })),
+        .map((set) => {
+          const record = set as unknown as Record<string, unknown>
+          return {
+            setId: set.setId,
+            setName: set.setName,
+            questions: normalizeQuestions(set.questions),
+            createdBy: typeof set.createdBy === "string" ? set.createdBy : undefined,
+            createdAt: typeof set.createdAt === "number" ? set.createdAt : undefined,
+            ...readOptionalSetMeta(record),
+          }
+        }),
     }
   }
 
@@ -55,13 +78,17 @@ export function normalizeSets(raw: unknown): QuizData {
     return {
       sets: Object.values(raw)
         .filter((item): item is QuizSet => typeof item === "object" && item !== null && "setId" in item)
-        .map((set) => ({
-          setId: set.setId,
-          setName: set.setName,
-          questions: normalizeQuestions(set.questions),
-          createdBy: typeof set.createdBy === "string" ? set.createdBy : undefined,
-          createdAt: typeof set.createdAt === "number" ? set.createdAt : undefined,
-        })),
+        .map((set) => {
+          const record = set as unknown as Record<string, unknown>
+          return {
+            setId: set.setId,
+            setName: set.setName,
+            questions: normalizeQuestions(set.questions),
+            createdBy: typeof set.createdBy === "string" ? set.createdBy : undefined,
+            createdAt: typeof set.createdAt === "number" ? set.createdAt : undefined,
+            ...readOptionalSetMeta(record),
+          }
+        }),
     }
   }
 
@@ -129,9 +156,11 @@ export async function ensureSetTarget(params: {
   newSetId?: string | null
   newSetName?: string | null
   createdBy?: string | null
+  tags?: string[] | null
+  coverImage?: string | null
   setsById: Record<string, unknown>
 }): Promise<{ targetSet: QuizSet; created: boolean; setRecord: Record<string, unknown> | null }> {
-  const { setMode, existingSetId, newSetId, newSetName, createdBy, setsById } = params
+  const { setMode, existingSetId, newSetId, newSetName, createdBy, tags, coverImage, setsById } = params
 
   if (setMode === "new") {
     if (!newSetId?.trim() || !newSetName?.trim()) {
@@ -144,10 +173,14 @@ export async function ensureSetTarget(params: {
     }
 
     const createdAt = Date.now()
+    const normalizedTags = normalizeTags(tags ?? [])
+    const resolvedCover = resolveCoverImage(coverImage)
     const setPayload: Record<string, unknown> = {
       setId,
       setName: newSetName.trim(),
       createdAt,
+      tags: normalizedTags,
+      coverImage: resolvedCover,
     }
     if (createdBy?.trim()) {
       setPayload.createdBy = createdBy.trim()
@@ -163,6 +196,15 @@ export async function ensureSetTarget(params: {
       throw new Error(`Failed to create set (${createResponse.status})`)
     }
 
+    await upsertSearchIndexEntry(
+      buildSearchIndexEntry({
+        setId,
+        setName: newSetName.trim(),
+        tags: normalizedTags,
+        createdAt,
+      }),
+    )
+
     return {
       targetSet: {
         setId,
@@ -170,6 +212,8 @@ export async function ensureSetTarget(params: {
         questions: [],
         createdBy: createdBy?.trim() || undefined,
         createdAt,
+        tags: normalizedTags,
+        coverImage: resolvedCover,
       },
       created: true,
       setRecord: { ...setPayload, questions: {} },
@@ -192,14 +236,36 @@ export async function ensureSetTarget(params: {
     throw new Error("Question set not found")
   }
 
+  const record = setRecord as Record<string, unknown>
+  const setName = String(record.setName ?? selectedSetId)
+  const meta = readOptionalSetMeta(record)
+  const createdAt = typeof record.createdAt === "number" ? record.createdAt : undefined
+
+  // Backfill lightweight search index for legacy sets when they are reused.
+  try {
+    await upsertSearchIndexEntry(
+      buildSearchIndexEntry({
+        setId: selectedSetId,
+        setName,
+        tags: meta.tags,
+        createdAt,
+      }),
+    )
+  } catch (error) {
+    console.error("Failed to backfill search index:", error)
+  }
+
   return {
     targetSet: {
-      setId: String((setRecord as Record<string, unknown>).setId ?? selectedSetId),
-      setName: String((setRecord as Record<string, unknown>).setName ?? selectedSetId),
-      questions: normalizeQuestions((setRecord as { questions?: unknown }).questions),
+      setId: String(record.setId ?? selectedSetId),
+      setName,
+      questions: normalizeQuestions(record.questions),
+      createdBy: typeof record.createdBy === "string" ? record.createdBy : undefined,
+      createdAt,
+      ...meta,
     },
     created: false,
-    setRecord: setRecord as Record<string, unknown>,
+    setRecord: record,
   }
 }
 

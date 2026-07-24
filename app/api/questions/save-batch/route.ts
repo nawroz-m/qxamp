@@ -4,6 +4,8 @@ import { buildDbUrl } from "@/lib/firebase"
 import { ensureSetTarget, saveQuestionsToSet } from "@/lib/quiz-storage"
 import type { QuizQuestion } from "@/lib/quiz-types"
 import { authenticateRequest } from "@/lib/auth-server"
+import { normalizeTags } from "@/lib/search-index"
+import { resolveCoverImage } from "@/lib/cover-images"
 
 type IncomingQuestion = {
   questionText?: string
@@ -39,6 +41,11 @@ export async function POST(request: NextRequest) {
     const setMode = payload?.setMode === "new" ? "new" : "existing"
     const setName = typeof payload?.setName === "string" ? payload.setName.trim() : ""
     const setId = typeof payload?.setId === "string" ? payload.setId.trim() : ""
+    const tags = setMode === "new" ? normalizeTags(payload?.tags) : []
+    const coverImage =
+      setMode === "new" && typeof payload?.coverImage === "string"
+        ? resolveCoverImage(payload.coverImage)
+        : undefined
     const rawQuestions: IncomingQuestion[] = Array.isArray(payload?.questions) ? payload.questions : []
 
     if (!rawQuestions.length) {
@@ -60,6 +67,8 @@ export async function POST(request: NextRequest) {
       newSetId: setMode === "new" ? setId : null,
       newSetName: setMode === "new" ? setName : null,
       createdBy: authUser?.uid ?? null,
+      tags: setMode === "new" ? tags : null,
+      coverImage: setMode === "new" ? coverImage : null,
       setsById,
     })
 

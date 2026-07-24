@@ -9,11 +9,10 @@ import {
   CommentTriggerButton,
 } from "@/components/comment-thread";
 import type { QuizSet } from "@/lib/quiz-types";
+import { resolveCoverImage } from "@/lib/cover-images";
 import { useComments } from "@/lib/use-comments";
 import { useSetActions } from "@/lib/use-set-actions";
 import { cn } from "@/lib/utils";
-
-const FEATURED_IMAGE = "/SetCoverAI.png";
 
 function formatRelativeTimestamp(timestamp?: number) {
   if (!timestamp) return "Recently";
@@ -68,7 +67,8 @@ export function SetCard({ set }: { set: QuizSet }) {
   const actions = useSetActions(set.setId);
   const commentsState = useComments(set.setId);
 
-  const tags = ["#ai", "#interview", "#exam", "#explore"];
+  const tags = (set.tags ?? []).map((tag) => (tag.startsWith("#") ? tag : `#${tag}`));
+  const coverImage = resolveCoverImage(set.coverImage);
   const metadata = `${formatRelativeTimestamp(set.createdAt)} • ${formatReadTime(set.questions.length)}`;
 
   function stopCardNavigation(event: React.MouseEvent | React.KeyboardEvent) {
@@ -92,20 +92,22 @@ export function SetCard({ set }: { set: QuizSet }) {
                 <h3 className="text-xl font-semibold leading-snug text-balance">
                   {set.setName}
                 </h3>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+                {tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {tags.map((tag) => (
+                      <Badge key={tag} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
                 <p className="mt-2 text-xs text-muted-foreground">{metadata}</p>
               </div>
             </div>
           </div>
           <div className="mt-3 px-4">
             <img
-              src={FEATURED_IMAGE}
+              src={coverImage}
               alt=""
               className="aspect-[16/9] w-full rounded-xl border object-cover"
             />
