@@ -77,7 +77,7 @@ function SearchBar() {
         aria-label="Open search"
         onClick={() => search.focusSearch()}
         className={cn(
-          "inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white md:hidden",
+          "inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/100 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white md:hidden",
           search.isMobileSearchOpen && "hidden",
         )}
       >
@@ -138,7 +138,7 @@ function SearchBar() {
           <div
             id="search-results-panel"
             role="listbox"
-            className="absolute top-[calc(100%+0.5rem)] left-0 z-50 w-full overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg"
+            className="absolute top-[calc(100%+0.5rem)] sm:left-0 -left-16 z-50 sm:w-full w-screen overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg"
           >
             {search.isLoading && (
               <p className="px-4 py-6 text-center text-sm text-muted-foreground">
@@ -305,6 +305,14 @@ function ProfileMenu() {
               <UserRound className="size-4" aria-hidden="true" />
               Edit Profile
             </Link>
+             <Link
+                href="/admin/add-question"
+                aria-label="Create new set"
+                className="sm:hidden flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+              >
+                <Plus className="size-4" aria-hidden="true" />
+                Create new set
+              </Link>
             <Link
               href="/admin/add-question"
               onClick={() => setOpen(false)}
@@ -366,7 +374,7 @@ function SiteHeaderInner() {
               className="size-full object-cover"
             />
           </span>
-          <span className="text-lg font-bold tracking-tight sm:text-xl">QXAMP</span>
+          <span className="text-lg font-bold tracking-tight sm:text-xl hidden sm:block">QXAMP</span>
         </Link>
 
         <div className="flex min-w-0 flex-1 justify-center">
@@ -378,7 +386,7 @@ function SiteHeaderInner() {
           <Link
             href="/admin/add-question"
             aria-label="Create new set"
-            className="inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/100 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            className="hidden sm:inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/100 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
           >
             <Plus className="size-4" aria-hidden="true" />
           </Link>
