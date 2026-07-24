@@ -5,6 +5,7 @@ export const AVAILABLE_COVER_IMAGES = [
   { path: "/SetCoverAI.png", label: "Cover A" },
   { path: "/SerCoverAI2.png", label: "Cover B" },
   { path: "/SerCoverAI3.png", label: "Cover C" },
+  { path: "/Hypothyroidism.png", label: "Cover D" },
 ] as const
 
 export type CoverImagePath = (typeof AVAILABLE_COVER_IMAGES)[number]["path"]
