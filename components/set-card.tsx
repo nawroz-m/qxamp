@@ -35,13 +35,6 @@ function formatReadTime(questionCount: number) {
   return `${minutes}m read`;
 }
 
-function getSetInitials(setName: string) {
-  const words = setName.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return "Q";
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-  return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
-}
-
 function ActionButton({
   label,
   onClick,
@@ -62,7 +55,7 @@ function ActionButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50",
+        "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50 cursor-pointer",
         active && "text-foreground",
       )}
     >
@@ -85,7 +78,7 @@ export function SetCard({ set }: { set: QuizSet }) {
 
   return (
     <>
-      <Card className="group overflow-hidden rounded-2xl transition-all hover:border-primary/40 hover:ring-primary/20 relative">
+      <Card className="group overflow-hidden rounded-2xl transition-all hover:border-primary/40 hover:ring-primary/30 relative">
         <Link
           href={`/quiz/${set.setId}`}
           className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -95,12 +88,6 @@ export function SetCard({ set }: { set: QuizSet }) {
           </Badge>
           <div className="flex flex-col gap-3 px-4 pt-4">
             <div className="flex items-start gap-3">
-              {/* <span
-                aria-hidden="true"
-                className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-sm font-semibold text-secondary-foreground"
-              >
-                {getSetInitials(set.setName)}
-              </span> */}
               <div className="min-w-0 flex-1">
                 <h3 className="text-xl font-semibold leading-snug text-balance">
                   {set.setName}
@@ -172,6 +159,7 @@ export function SetCard({ set }: { set: QuizSet }) {
                 className={cn(
                   "size-4",
                   actions.userAction.bookmarked && "fill-current",
+                  "cursor-pointer",
                 )}
                 aria-hidden="true"
               />
@@ -183,7 +171,7 @@ export function SetCard({ set }: { set: QuizSet }) {
               disabled={actions.isUpdating}
             >
               <Share2 className="size-4" aria-hidden="true" />
-              <span className="text-xs font-medium tabular-nums">
+              <span className="text-xs font-medium tabular-nums ">
                 {actions.stats.shares}
               </span>
             </ActionButton>
