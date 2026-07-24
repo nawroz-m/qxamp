@@ -89,18 +89,28 @@ export function SetCard({ set }: { set: QuizSet }) {
           <div className="flex flex-col gap-3 px-4 pt-4">
             <div className="flex items-start gap-3">
               <div className="min-w-0 flex-1">
-                <h3 className="text-xl font-semibold leading-snug text-balance">
+                <h3 className="text-lg font-semibold leading-snug text-balance line-clamp-3"
+                title={set.setName}>
                   {set.setName}
-                </h3>
+                </h3> 
                 {tags.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {tags.map((tag) => (
-                      <Badge key={tag} variant="secondary">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                    <div
+                      className="mt-2 flex items-center gap-1.5 overflow-hidden whitespace-nowrap"
+                      title={tags.join(", ")}
+                    >
+                      {tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary" className="shrink-0">
+                          {tag}
+                        </Badge>
+                      ))}
+
+                      {tags.length > 3 && (
+                        <Badge variant="secondary" className="shrink-0">
+                          +{tags.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 <p className="mt-2 text-xs text-muted-foreground">{metadata}</p>
               </div>
             </div>

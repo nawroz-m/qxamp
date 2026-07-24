@@ -374,30 +374,15 @@ function SiteHeaderInner() {
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="relative inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
-          >
-            <Bell className="size-4" aria-hidden="true" />
-            <span className="absolute top-2 right-2 size-2 rounded-full bg-destructive" />
-          </button>
 
           <Link
             href="/admin/add-question"
             aria-label="Create new set"
-            className="inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/100 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
           >
             <Plus className="size-4" aria-hidden="true" />
           </Link>
 
-          <button
-            type="button"
-            aria-label="Bookmarks"
-            className="hidden size-10 items-center justify-center rounded-xl bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white sm:inline-flex"
-          >
-            <Bookmark className="size-4" aria-hidden="true" />
-          </button>
 
           <ProfileMenu />
         </div>

@@ -88,7 +88,18 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:py-10">
       <div className="sr-only">
         <h1>QXAMP</h1>
-        <p>Turn What You Learn Into What You Remember</p>
+        <h2>Turn What You Learn Into What You Remember</h2>
+        <p className="sr-only">
+          QXAMP transforms your notes, articles, and study material into
+          interactive quizzes — instantly. Paste your content, choose how many
+          questions you want, and let AI turn it into a quiz you can revisit
+          anytime, anywhere.
+        </p>
+        <p className="sr-only">
+          Every quiz you create joins a growing, community-built library —
+          anonymous, open, and free for anyone curious enough to learn something
+          new by simply answering a question.
+        </p>
       </div>
 
       <Suspense
