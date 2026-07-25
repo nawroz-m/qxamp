@@ -96,7 +96,7 @@ function SearchBar() {
         />
         <input
           ref={search.inputRef}
-          type="search"
+          // type="search"
           value={search.inputValue}
           onChange={(event) => search.setQuery(event.target.value)}
           onFocus={() => search.setIsPanelOpen(true)}
@@ -113,7 +113,7 @@ function SearchBar() {
               type="button"
               aria-label="Clear search"
               onClick={() => search.clearSearch()}
-              className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
+              className="sm:inline-flex hidden size-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
             >
               <X className="size-3.5" aria-hidden="true" />
             </button>
