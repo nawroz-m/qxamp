@@ -101,7 +101,7 @@ function SearchBar() {
           onChange={(event) => search.setQuery(event.target.value)}
           onFocus={() => search.setIsPanelOpen(true)}
           placeholder="Search sets and tags…"
-          className="h-10 w-full rounded-xl border border-input bg-muted/40 py-2 pr-20 pl-9 text-sm outline-none transition-[color,box-shadow,border-color] placeholder:text-muted-foreground focus:border-primary focus:ring-3 focus:ring-primary/30"
+          className="h-10 w-full rounded-xl border border-input bg-muted/40 py-2 sm:pr-20 pr-8 pl-9 text-sm outline-none transition-[color,box-shadow,border-color] placeholder:text-muted-foreground focus:border-primary focus:ring-3 focus:ring-primary/30"
           aria-label="Search quiz sets"
           aria-expanded={showPanel}
           aria-controls="search-results-panel"

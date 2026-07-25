@@ -76,10 +76,14 @@ async function readUsageRecord(ref: { once: (event: "value") => Promise<{ val: (
 
   const snapshot = await ref.once("value");
   const payload = snapshot.val();
-  const apiUsage = payload as Record<string, unknown> | null;
+  // Expecting shape: { apiUsage?: { date?: string; count?: number } }
+  const apiUsage = (payload as { apiUsage?: { date?: string; count?: number } } | null) ?? null;
+  const recordedDate = apiUsage?.apiUsage?.date;
+  const recordedCount = apiUsage?.apiUsage?.count;
+
   return {
-    date: typeof apiUsage?.date === "string" ? apiUsage.date : today,
-    count: Number(apiUsage?.count ?? 0),
+    date: typeof recordedDate === "string" ? recordedDate : today,
+    count: typeof recordedCount === "number" ? recordedCount : Number(recordedCount ?? 0),
   } satisfies UsageRecord;
 }
 

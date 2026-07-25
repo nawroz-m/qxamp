@@ -122,7 +122,7 @@ export default function QuizPage() {
       {set && (
         <>
           <header className="mb-6 flex items-center sm:flex-row flex-col justify-between gap-4">
-            <h1 className="text-balance text-xl font-bold tracking-tight">
+            <h1 className="text-balance text-xl font-bold tracking-tight text-center">
               {set.setName}
               <span className="text-sm text-muted-foreground"> ({total})</span>
             </h1>
