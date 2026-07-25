@@ -104,11 +104,11 @@ export async function enforceOpenAiLimit(request: NextRequest, user: AuthUser | 
     const record = await readUsageRecord(userRef, today);
     const resolved = record.date === today ? record : { date: today, count: 0 };
 
-    if (resolved.count >= 100) {
+    if (resolved.count >= 40) {
       return {
         allowed: false,
         status: 429,
-        error: "Daily limit of 100 requests reached. Try again tomorrow.",
+        error: "Daily limit of 40 requests reached. Try again tomorrow.",
       } as const;
     }
 
