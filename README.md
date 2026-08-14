@@ -1,24 +1,24 @@
-Contributions are welcome! If you want to add or improve questions, quiz sets, UI, or functionality, follow these simple guidelines.
+# Contributions are welcome! If you want to add or improve questions, quiz sets, UI, or functionality, follow these simple guidelines.
 
-Adding Questions
+## Adding Questions
 
-1. Open the application.
+1. Open the application(https://qxamp.vercel.app/).
 2. Tap the Profile icon and click the + (Create New Set) icon.
 3. Add questions to an existing set or create a new set.
 4. Paste your content into the AI prompt field and choose the number of questions you want to generate.
 5. Provide the source of your content using either a URL or plain text.
 
-Adding a New Quiz Set
+## Adding a New Quiz Set
 
-When creating a new set, provide:
+### When creating a new set, provide:
 
 - Source URL — if available.
 - Title — a clear name for the set.
 - Tags — relevant tags to make the set easier to search and find.
 
-Improving the UI or Functionality
+## Improving the UI or Functionality
 
-If you want to improve the UI or functionality:
+### If you want to improve the UI or functionality:
 
 1. Create a new branch.
 2. Make your changes.
@@ -26,7 +26,7 @@ If you want to improve the UI or functionality:
 4. Make sure existing quiz functionality still works.
 5. Create a pull request with a short description of your changes.
 
-Guidelines
+## Guidelines
 
 - Keep the application simple and lightweight.
 - Follow the existing code structure and style.
