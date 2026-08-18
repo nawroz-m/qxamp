@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { Suspense, useEffect, useRef, useState } from "react"
+import React, { Suspense, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslation } from 'react-i18next';
 import {
   Bell,
   Bookmark,
@@ -14,7 +15,18 @@ import {
   Sun,
   UserRound,
   X,
-} from "lucide-react"
+  Languages
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 import { useSearch } from "@/lib/use-search"
 import {
   clearStoredAuthSession,
@@ -29,6 +41,10 @@ function isMacPlatform() {
   return /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent)
 }
 
+const languages = [
+  { label: "English", value: "en" },
+  { label: "فارسی/دری", value: "far" },
+];
 function highlightMatch(text: string, query: string) {
   const q = query.trim()
   if (!q) return text
@@ -203,9 +219,8 @@ function SearchBar() {
 
             {search.isTruncated && (
               <Link
-                href={`/?q=${encodeURIComponent(search.query)}${
-                  search.tagFilter ? `&tag=${encodeURIComponent(search.tagFilter)}` : ""
-                }`}
+                href={`/?q=${encodeURIComponent(search.query)}${search.tagFilter ? `&tag=${encodeURIComponent(search.tagFilter)}` : ""
+                  }`}
                 onClick={() => search.setIsPanelOpen(false)}
                 className="block border-t border-border px-4 py-2.5 text-center text-sm font-medium text-primary hover:bg-muted/50"
               >
@@ -232,7 +247,7 @@ function ProfileMenu() {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [darkMode, setDarkMode] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
-
+  const { t, i18n } = useTranslation();
   useEffect(() => {
     setToken(getStoredAuthToken())
     setUser(getStoredAuthUser())
@@ -265,7 +280,11 @@ function ProfileMenu() {
     setOpen(false)
     router.refresh()
   }
+  const languageHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
 
+    i18n.changeLanguage(e.target.value)
+    localStorage.setItem('lang', e.target.value)
+  };
   const initials = user?.identifier
     ? user.identifier.slice(0, 2).toUpperCase()
     : null
@@ -303,16 +322,16 @@ function ProfileMenu() {
               className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <UserRound className="size-4" aria-hidden="true" />
-              Edit Profile
+              {t('content.Edit profile')}
             </Link>
-             <Link
-                href="/admin/add-question"
-                aria-label="Create new set"
-                className="sm:hidden flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
-              >
-                <Plus className="size-4" aria-hidden="true" />
-                Create new set
-              </Link>
+            <Link
+              href="/admin/add-question"
+              aria-label="Create new set"
+              className="sm:hidden flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              Create new set
+            </Link>
             <Link
               href="/admin/add-question"
               onClick={() => setOpen(false)}
@@ -331,9 +350,28 @@ function ProfileMenu() {
               ) : (
                 <Moon className="size-4" aria-hidden="true" />
               )}
-              Dark Mode
+              {t('content.Dark Mode')}
               <span className="ml-auto text-xs">{darkMode ? "On" : "Off"}</span>
             </button>
+            {/* Language Selector */}
+            <div className="flex items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground">
+              <Languages />
+              <select
+                defaultValue=""
+                onChange={languageHandler}
+                className="w-full max-w-48 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="" disabled>
+                  Select a language
+                </option>
+
+                {languages.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             {token ? (
               <button
                 type="button"
@@ -361,6 +399,7 @@ function ProfileMenu() {
 }
 
 function SiteHeaderInner() {
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-3 px-4 sm:h-16 sm:gap-4">

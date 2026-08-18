@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import { SetCard } from "@/components/set-card"
 import { useQuizData } from "@/lib/use-quiz-data"
 import { useSearch } from "@/lib/use-search"
+import '../lib/i18n'
 
 function SetsSection() {
   const { data, error, isLoading } = useQuizData()
@@ -19,8 +20,8 @@ function SetsSection() {
   const visibleSets =
     data && search.hasActiveSearch
       ? data.sets.filter((set) =>
-          search.results.some((result) => result.setId === set.setId),
-        )
+        search.results.some((result) => result.setId === set.setId),
+      )
       : data?.sets ?? []
 
   return (
