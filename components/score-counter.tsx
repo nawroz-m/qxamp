@@ -1,6 +1,7 @@
 "use client"
 
 import { Trophy } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 export function ScoreCounter({
   score,
@@ -11,6 +12,8 @@ export function ScoreCounter({
   answered: number
   total: number
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex items-center gap-3 rounded-full border bg-card/90 px-4 py-2 shadow-sm backdrop-blur">
       <span className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
@@ -20,7 +23,7 @@ export function ScoreCounter({
         <p className="text-lg font-bold tabular-nums">
           {score}/{total}
         </p>
-        <p className="text-xs text-muted-foreground">{answered} answered</p>
+        <p className="text-xs text-muted-foreground">{t("content.{{count}} answered", { count: answered })}</p>
       </div>
     </div>
   )

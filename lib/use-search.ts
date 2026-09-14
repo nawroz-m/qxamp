@@ -8,6 +8,7 @@ import {
   type ScoredSearchResult,
   type SearchIndexEntry,
 } from "@/lib/search-index";
+import i18n from "@/lib/i18n";
 
 const DEBOUNCE_MS = 300;
 const DROPDOWN_LIMIT = 6;
@@ -19,7 +20,7 @@ async function fetchSearchIndex(): Promise<SearchIndexEntry[]> {
 
   const response = await fetch("/api/search", { cache: "no-store" });
   if (!response.ok) {
-    throw new Error(`Failed to load search index (${response.status})`);
+    throw new Error(i18n.t("content.Failed to load search index ({{status}})", { status: response.status }));
   }
 
   const json = (await response.json()) as { entries?: unknown };
@@ -75,7 +76,7 @@ export function useSearch() {
       .catch((err) => {
         if (active) {
           setError(
-            err instanceof Error ? err.message : "Failed to load search",
+            err instanceof Error ? err.message : i18n.t("content.Failed to load search"),
           );
         }
       })

@@ -29,6 +29,7 @@ import { CoverImagePicker } from "@/components/cover-image-picker";
 import { TagInput } from "@/components/tag-input";
 import { DEFAULT_COVER_IMAGE } from "@/lib/cover-images";
 import { invalidateSearchIndexCache } from "@/lib/use-search";
+import { useTranslation } from "react-i18next";
 
 const OPTION_IDS = ["a", "b", "c", "d"] as const;
 const NEW_SET_VALUE = "__new__";
@@ -66,6 +67,7 @@ const initialForm = {
 };
 
 export default function AddQuestionPage() {
+  const { t } = useTranslation();
   const { data, error, isLoading } = useQuizData();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -94,9 +96,9 @@ export default function AddQuestionPage() {
     trimmedNewSetId.length > 0 &&
     !SET_ID_PATTERN.test(trimmedNewSetId);
   const newSetIdError = isNewSetIdDuplicate
-    ? "This Set ID already exists. Please choose another."
+    ? t("content.This Set ID already exists. Please choose another.")
     : isNewSetIdFormatInvalid
-      ? "Use only lowercase letters, numbers, hyphens, or underscores."
+      ? t("content.Use only lowercase letters, numbers, hyphens, or underscores.")
       : null;
   const isNewSetIdValid =
     form.setMode !== "new" ||
@@ -167,16 +169,19 @@ export default function AddQuestionPage() {
       });
       const result = await res.json();
       if (!res.ok) {
-        setSubmitError(result.error ?? "Failed to save question");
+        setSubmitError(result.error ?? t("content.Failed to save question"));
         return;
       }
       setSuccessMessage(
-        `Question #${result.questionId} added to "${result.setName}" successfully.`,
+        t('content.Question #{{questionId}} added to "{{setName}}" successfully.', {
+          questionId: result.questionId,
+          setName: result.setName,
+        }),
       );
       invalidateSearchIndexCache();
       resetForm();
     } catch {
-      setSubmitError("Failed to save question. Please try again.");
+      setSubmitError(t("content.Failed to save question. Please try again."));
     } finally {
       setIsSubmitting(false);
     }
@@ -213,7 +218,7 @@ export default function AddQuestionPage() {
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.error ?? "Failed to generate questions.");
+        throw new Error(result.error ?? t("content.Failed to generate questions."));
       }
 
       const generatedItems: unknown[] = Array.isArray(result.questions) ? result.questions : [];
@@ -222,7 +227,7 @@ export default function AddQuestionPage() {
         .filter((item: GeneratedQuestion | null): item is GeneratedQuestion => Boolean(item));
 
       if (nextQuestions.length === 0) {
-        throw new Error("No questions were returned.");
+        throw new Error(t("content.No questions were returned."));
       }
 
       setGeneratedQuestions(nextQuestions);
@@ -230,7 +235,7 @@ export default function AddQuestionPage() {
     } catch (err) {
       setGeneratedQuestions([]);
       setAiError(
-        err instanceof Error ? err.message : "Failed to generate questions.",
+        err instanceof Error ? err.message : t("content.Failed to generate questions."),
       );
     } finally {
       setIsAiGenerating(false);
@@ -246,7 +251,7 @@ export default function AddQuestionPage() {
         : isNewSetIdValid && !!form.newSetName.trim()) || false;
 
     if (!canSaveToSet) {
-      setAiError("Please choose a set before accepting generated questions.");
+      setAiError(t("content.Please choose a set before accepting generated questions."));
       return;
     }
 
@@ -276,17 +281,17 @@ export default function AddQuestionPage() {
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.error ?? "Failed to save generated questions.");
+        throw new Error(result.error ?? t("content.Failed to save generated questions."));
       }
 
-      setAiSuccess(`Generated questions were added to "${result.setName}" successfully.`);
+      setAiSuccess(t('content.Generated questions were added to "{{setName}}" successfully.', { setName: result.setName }));
       invalidateSearchIndexCache();
       setGeneratedQuestions([]);
       setAiPrompt("");
       setIsAiPanelOpen(false);
     } catch (err) {
       setAiError(
-        err instanceof Error ? err.message : "Failed to save generated questions.",
+        err instanceof Error ? err.message : t("content.Failed to save generated questions."),
       );
     }
   }
@@ -297,18 +302,17 @@ export default function AddQuestionPage() {
         <Button variant="ghost" size="lg">
           <Link href="/" className="flex gap-3">
             <ArrowLeft className="size-4" aria-hidden="true" />
-            <span>Back to Sets</span>
+            <span>{t("content.Back to Sets")}</span>
           </Link>
         </Button>
       </div>
 
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Add Question
+          {t("content.Add Question")}
         </h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Create a new quiz question and append it to an existing set or a
-          brand-new set.
+          {t("content.Create a new quiz question and append it to an existing set or a brand-new set.")}
         </p>
       </header>
 
@@ -335,34 +339,34 @@ export default function AddQuestionPage() {
       >
         <Card>
           <CardHeader>
-            <CardTitle>Question Set</CardTitle>
+            <CardTitle>{t("content.Question Set")}</CardTitle>
             <CardDescription>
-              Choose an existing set or create a new one.
+              {t("content.Choose an existing set or create a new one.")}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             {isLoading && (
-              <p className="text-sm text-muted-foreground">Loading sets…</p>
+              <p className="text-sm text-muted-foreground">{t("content.Loading sets…")}</p>
             )}
             {hasQuizDataError && (
               <p className="text-sm text-destructive">
-                Failed to load sets. Please refresh the page.
+                {t("content.Failed to load sets. Please refresh the page.")}
               </p>
             )}
             {data && (
               <>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="set-select">Set</Label>
+                  <Label htmlFor="set-select">{t("content.Set")}</Label>
                   <Select
                     value={selectedSetValue}
                     onValueChange={handleSetSelection}
                   >
                     <SelectTrigger id="set-select" className="w-full">
-                      <SelectValue placeholder="Select a question set" />
+                      <SelectValue placeholder={t("content.Select a question set")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value={NEW_SET_VALUE} className='bg-muted/50 py-2 cursor-pointer hover:bg-muted/70'>
-                        Create New Set
+                        {t("content.Create New Set")}
                       </SelectItem>
                       {data.sets.map((set) => (
                         <SelectItem key={set.setId} value={set.setId} className="cursor-pointer hover:bg-muted/50">
@@ -378,12 +382,12 @@ export default function AddQuestionPage() {
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-1.5">
-                          <Label htmlFor="newSetId">Set ID</Label>
+                          <Label htmlFor="newSetId">{t("content.Set ID")}</Label>
                           <button
                             type="button"
                             className="inline-flex text-muted-foreground hover:text-foreground"
-                            title="Use only lowercase letters, numbers, hyphens, or underscores. No spaces or special characters allowed."
-                            aria-label="Set ID format rules"
+                            title={t("content.Set ID help")}
+                            aria-label={t("content.Set ID format rules")}
                           >
                             <Info className="size-3.5" aria-hidden="true" />
                           </button>
@@ -391,7 +395,7 @@ export default function AddQuestionPage() {
                         <Input
                           id="newSetId"
                           name="newSetId"
-                          placeholder="e.g. set3"
+                          placeholder={t("content.e.g. set3")}
                           value={form.newSetId}
                           onChange={(e) =>
                             setForm((prev) => ({
@@ -416,11 +420,11 @@ export default function AddQuestionPage() {
                         )}
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Label htmlFor="newSetName">Set Name</Label>
+                        <Label htmlFor="newSetName">{t("content.Set Name")}</Label>
                         <Input
                           id="newSetName"
                           name="newSetName"
-                          placeholder="e.g. History Basics"
+                          placeholder={t("content.e.g. History Basics")}
                           value={form.newSetName}
                           onChange={(e) =>
                             setForm((prev) => ({
@@ -459,7 +463,7 @@ export default function AddQuestionPage() {
               <div onClick={() => setIsAiPanelOpen((prev) => !prev)} className="cursor-pointer ">
                   <CardTitle className="flex gap-1">
                     <span>
-                      Generate with
+                      {t("content.Generate with")}
                     </span>
                     
                     <div className="flex items-center gap-1.5">
@@ -471,8 +475,7 @@ export default function AddQuestionPage() {
                     </div>
                   </CardTitle> 
                 <CardDescription>
-                  Paste notes, articles, or raw text and turn them into editable
-                  MCQ questions.
+                  {t("content.Paste notes, articles, or raw text and turn them into editable MCQ questions.")}
                 </CardDescription>
               </div>
               <Button
@@ -482,19 +485,19 @@ export default function AddQuestionPage() {
                 onClick={() => setIsAiPanelOpen((prev) => !prev)}
                 className="cursor-pointer"
               >
-                {isAiPanelOpen ? "Hide" : "Open"}
+                {isAiPanelOpen ? t("content.Hide") : t("content.Open")}
               </Button>
             </div>
           </CardHeader>
           {isAiPanelOpen && (
             <div className="flex flex-row gap-2 px-4 pt-2 justify-between">
-                  <Label htmlFor="ai-question-count">Number of questions</Label>
+                  <Label htmlFor="ai-question-count">{t("content.Number of questions")}</Label>
                   <Select
                     value={String(questionCount)}
                     onValueChange={(val) => setQuestionCount(Number(val))} 
                   >
                     <SelectTrigger id="ai-question-count">
-                      <SelectValue placeholder="Select count" />
+                      <SelectValue placeholder={t("content.Select count")} />
                     </SelectTrigger>
                     <SelectContent className="">
                       {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
@@ -512,16 +515,15 @@ export default function AddQuestionPage() {
               <div
               onClick={() => setIsAiPanelOpen((prev) => !prev)}
                className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground cursor-pointer hover:bg-muted/50">
-                Paste content to generate questions quickly, then review and
-                accept them for your selected set.
+                {t("content.Paste content to generate questions quickly, then review and accept them for your selected set.")}
               </div>
             ) : (
               <>
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="ai-prompt">Paste content</Label>
+                  <Label htmlFor="ai-prompt">{t("content.Paste content")}</Label>
                   <Textarea
                     id="ai-prompt"
-                    placeholder="Paste your notes or content here to generate questions..."
+                    placeholder={t("content.Paste your notes or content here to generate questions...")}
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
                     rows={7}
@@ -531,7 +533,7 @@ export default function AddQuestionPage() {
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
                   <div className="flex-1 flex flex-col gap-2">
-                    <Label htmlFor="ai-model">Model</Label>
+                    <Label htmlFor="ai-model">{t("content.Model")}</Label>
                     <Select
                       value={aiModel}
                       onValueChange={(value) => setAiModel(value ?? "gpt-4o-mini")}

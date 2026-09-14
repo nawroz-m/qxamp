@@ -4,6 +4,7 @@ import { useCallback, useState } from "react"
 import { getActorDisplayName, getActorHeaders } from "@/lib/actor-identity"
 import { getAuthHeaders } from "@/lib/auth-client"
 import type { SetComment } from "@/lib/engagement-types"
+import i18n from "@/lib/i18n"
 
 function buildCommentHeaders() {
   return {
@@ -31,14 +32,14 @@ export function useComments(setId: string) {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to load comments.")
+        throw new Error(i18n.t("content.Failed to load comments."))
       }
 
       const payload = (await response.json()) as { comments?: SetComment[] }
       setComments(payload.comments ?? [])
       setHasLoaded(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load comments.")
+      setError(err instanceof Error ? err.message : i18n.t("content.Failed to load comments."))
     } finally {
       setIsLoading(false)
     }
@@ -72,7 +73,7 @@ export function useComments(setId: string) {
 
         if (!response.ok) {
           const payload = (await response.json().catch(() => null)) as { error?: string } | null
-          throw new Error(payload?.error ?? "Failed to post comment.")
+          throw new Error(payload?.error ?? i18n.t("content.Failed to post comment."))
         }
 
         const payload = (await response.json()) as { comment?: SetComment }
@@ -84,7 +85,7 @@ export function useComments(setId: string) {
 
         return true
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to post comment.")
+        setError(err instanceof Error ? err.message : i18n.t("content.Failed to post comment."))
         return false
       } finally {
         setIsSubmitting(false)

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { QuizQuestion } from "@/lib/quiz-types";
+import { useTranslation } from "react-i18next";
 
 function resolveImage(path?: string) {
   if (!path) return undefined;
@@ -23,6 +24,7 @@ export function QuestionCard({
   selectedOptionId?: string;
   onSelect: (optionId: string) => void;
 }) {
+  const { t } = useTranslation();
   const answered = selectedOptionId !== undefined;
   const isCorrect = selectedOptionId === question.correctOptionId;
   const questionImage = resolveImage(question.questionImage);
@@ -47,7 +49,7 @@ export function QuestionCard({
         {questionImage && (
           <img
             src={questionImage || "/placeholder.svg"}
-            alt={`Illustration for question ${index + 1}`}
+            alt={t("content.Illustration for question {{index}}", { index: index + 1 })}
             className="mt-3 max-h-64 w-full rounded-lg border object-cover"
           />
         )}
@@ -100,7 +102,7 @@ export function QuestionCard({
                   {optionImage && (
                     <img
                       src={optionImage || "/placeholder.svg"}
-                      alt={`Option ${option.id}`}
+                      alt={t("content.Option {{id}}", { id: option.id })}
                       className="size-12 rounded-md border object-cover"
                     />
                   )}
@@ -114,7 +116,7 @@ export function QuestionCard({
           <div className="rounded-lg border bg-muted/50 p-4">
             <div className="mb-1 flex items-center gap-2 text-sm font-semibold">
               <Lightbulb className="size-4 text-primary" aria-hidden="true" />
-              {isCorrect ? "Correct!" : "Explanation"}
+              {isCorrect ? t("content.Correct!") : t("content.Explanation")}
             </div>
             {question.explanation && (
               <p className="text-sm leading-relaxed text-muted-foreground">
@@ -124,7 +126,7 @@ export function QuestionCard({
             {explanationImage && (
               <img
                 src={explanationImage || "/placeholder.svg"}
-                alt={`Explanation for question ${index + 1}`}
+                alt={t("content.Explanation for question {{index}}", { index: index + 1 })}
                 className="mt-3 max-h-64 w-full rounded-lg border object-cover"
               />
             )}

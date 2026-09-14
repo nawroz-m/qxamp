@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { persistAuthSession } from "@/lib/auth-client";
 
 export default function AuthPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMode = searchParams.get("mode") === "signup" ? "signup" : "signin";
@@ -34,13 +36,13 @@ export default function AuthPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error ?? "Authentication failed.");
+        throw new Error(result.error ?? t("content.Authentication failed."));
       }
 
       persistAuthSession(result.token, result.user);
       router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Authentication failed.");
+      setError(err instanceof Error ? err.message : t("content.Authentication failed."));
     } finally {
       setIsSubmitting(false);
     }
@@ -50,27 +52,27 @@ export default function AuthPage() {
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-10">
       <Card>
         <CardHeader>
-          <CardTitle>{mode === "signup" ? "Create an account" : "Sign in"}</CardTitle>
+          <CardTitle>{mode === "signup" ? t("content.Create an account") : t("content.Sign in")}</CardTitle>
           <CardDescription>
-            Use an email or phone number with a password to continue.
+            {t("content.Use an email or phone number with a password to continue.")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="identifier">Email or phone number</Label>
+              <Label htmlFor="identifier">{t("content.Email or phone number")}</Label>
               <Input
                 id="identifier"
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
-                placeholder="name@example.com or +1 555 123 4567"
+                placeholder={t("content.name@example.com or +1 555 123 4567")}
                 autoComplete="username"
                 required
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("content.Password")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -88,7 +90,11 @@ export default function AuthPage() {
             ) : null}
 
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
+              {isSubmitting
+                ? t("content.Please wait…")
+                : mode === "signup"
+                  ? t("content.Create account")
+                  : t("content.Sign in")}
             </Button>
           </form>
 
@@ -101,10 +107,12 @@ export default function AuthPage() {
                 setError(null);
               }}
             >
-              {mode === "signup" ? "Already have an account? Sign in" : "Need an account? Sign up"}
+              {mode === "signup"
+                ? t("content.Already have an account? Sign in")
+                : t("content.Need an account? Sign up")}
             </button>
             <Link href="/" className="font-medium text-primary underline-offset-4 hover:underline">
-              Back home
+              {t("content.Back home")}
             </Link>
           </div>
         </CardContent>

@@ -7,6 +7,7 @@ import {
   type CoverImagePath,
 } from "@/lib/cover-images"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 type CoverImagePickerProps = {
   value: string
@@ -19,11 +20,12 @@ export function CoverImagePicker({
   onChange,
   disabled,
 }: CoverImagePickerProps) {
+  const { t } = useTranslation()
   const selected = (value || DEFAULT_COVER_IMAGE) as CoverImagePath
 
   return (
     <div className="flex flex-col gap-2">
-      <Label>Cover image</Label>
+      <Label>{t("content.Cover image")}</Label>
       <div className="grid grid-cols-3 gap-2">
         {AVAILABLE_COVER_IMAGES.map((cover) => {
           const isSelected = selected === cover.path
@@ -33,7 +35,7 @@ export function CoverImagePicker({
               type="button"
               disabled={disabled}
               aria-pressed={isSelected}
-              aria-label={`Select ${cover.label}`}
+              aria-label={t("content.Select {{label}}", { label: t(`content.${cover.label}`) })}
               onClick={() => onChange(cover.path)}
               className={cn(
                 "overflow-hidden rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

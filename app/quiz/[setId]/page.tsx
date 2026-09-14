@@ -9,6 +9,7 @@ import { QuestionCard } from "@/components/question-card";
 import { ScoreCounter } from "@/components/score-counter";
 import { useQuizData } from "@/lib/use-quiz-data";
 import { Shuffle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function shuffleArray<T>(array: T[]): T[] {
   // Fisher–Yates shuffle
@@ -23,6 +24,7 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export default function QuizPage() {
+  const { t } = useTranslation();
   const params = useParams<{ setId: string }>();
   const { data, error, isLoading } = useQuizData();
   // answers maps questionId -> selected option id
@@ -84,7 +86,7 @@ export default function QuizPage() {
         <Button variant="ghost" size="lg">
           <Link href="/" className="flex gap-3">
             <ArrowLeft className="size-4" aria-hidden="true" />
-            <span>Back to Sets</span>
+            <span>{t("content.Back to Sets")}</span>
           </Link>
         </Button>
         <Button
@@ -94,27 +96,27 @@ export default function QuizPage() {
           disabled={answeredCount === 0}
         >
           <RotateCcw className="size-4" aria-hidden="true" />
-          Reset Quiz
+          {t("content.Reset Quiz")}
         </Button>
       </div>
 
       {isLoading && (
         <p className="text-center text-sm text-muted-foreground">
-          Loading questions…
+          {t("content.Loading questions…")}
         </p>
       )}
       {error instanceof Error && (
         <p className="text-center text-sm text-destructive">
-          Failed to load quiz data.
+          {t("content.Failed to load quiz data.")}
         </p>
       )}
       {data && !set && (
         <div className="rounded-lg border p-6 text-center">
           <p className="text-sm text-muted-foreground">
-            This quiz set could not be found.
+            {t("content.This quiz set could not be found.")}
           </p>
           <Button className="mt-4" size="sm">
-            <Link href="/">Back to Sets</Link>
+            <Link href="/">{t("content.Back to Sets")}</Link>
           </Button>
         </div>
       )}
@@ -133,7 +135,7 @@ export default function QuizPage() {
               className="cursor-pointer"
             >
               <Shuffle className="mr-2 h-4 w-4" />
-              Shuffle
+              {t("content.Shuffle")}
             </Button>
           </header>
 

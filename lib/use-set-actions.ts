@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { getActorHeaders, getActorId } from "@/lib/actor-identity"
 import { getAuthHeaders } from "@/lib/auth-client"
 import { DEFAULT_SET_STATS, type SetStats, type UserSetAction } from "@/lib/engagement-types"
+import i18n from "@/lib/i18n"
 
 function buildEngagementHeaders() {
   return {
@@ -29,7 +30,7 @@ export function useSetActions(setId: string) {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to load engagement data.")
+        throw new Error(i18n.t("content.Failed to load engagement data."))
       }
 
       const payload = (await response.json()) as {
@@ -40,7 +41,7 @@ export function useSetActions(setId: string) {
       setStats(payload.stats ?? DEFAULT_SET_STATS)
       setUserAction(payload.userAction ?? { vote: null, bookmarked: false })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load engagement data.")
+      setError(err instanceof Error ? err.message : i18n.t("content.Failed to load engagement data."))
     } finally {
       setIsLoading(false)
     }
@@ -53,7 +54,7 @@ export function useSetActions(setId: string) {
   const performAction = useCallback(
     async (body: Record<string, unknown>) => {
       if (!getActorId()) {
-        setError("Unable to identify this browser session.")
+        setError(i18n.t("content.Unable to identify this browser session."))
         return null
       }
 
@@ -69,7 +70,7 @@ export function useSetActions(setId: string) {
 
         if (!response.ok) {
           const payload = (await response.json().catch(() => null)) as { error?: string } | null
-          throw new Error(payload?.error ?? "Failed to update engagement.")
+          throw new Error(payload?.error ?? i18n.t("content.Failed to update engagement."))
         }
 
         const payload = (await response.json()) as {
@@ -82,7 +83,7 @@ export function useSetActions(setId: string) {
 
         return payload
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to update engagement.")
+        setError(err instanceof Error ? err.message : i18n.t("content.Failed to update engagement."))
         return null
       } finally {
         setIsUpdating(false)
@@ -109,7 +110,7 @@ export function useSetActions(setId: string) {
 
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: "QXAMP Quiz Set", url: shareUrl })
+        await navigator.share({ title: i18n.t("content.QXAMP Quiz Set"), url: shareUrl })
       } catch {
         // User dismissed native share sheet.
       }

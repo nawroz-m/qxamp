@@ -4,6 +4,7 @@ import Link from "next/link"
 import React, { Suspense, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslation } from 'react-i18next';
+import { I18nLanguageSync, languages } from "@/lib/i18n"
 import {
   Bell,
   Bookmark,
@@ -41,10 +42,6 @@ function isMacPlatform() {
   return /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent)
 }
 
-const languages = [
-  { label: "English", value: "en" },
-  { label: "فارسی/دری", value: "far" },
-];
 function highlightMatch(text: string, query: string) {
   const q = query.trim()
   if (!q) return text
@@ -65,6 +62,7 @@ function highlightMatch(text: string, query: string) {
 }
 
 function SearchBar() {
+  const { t } = useTranslation()
   const search = useSearch()
   const shortcutLabel = isMacPlatform() ? "⌘K" : "Ctrl+K"
   const panelRef = useRef<HTMLDivElement | null>(null)
@@ -90,7 +88,7 @@ function SearchBar() {
       {/* Mobile: collapsed icon */}
       <button
         type="button"
-        aria-label="Open search"
+        aria-label={t('content.Open search')}
         onClick={() => search.focusSearch()}
         className={cn(
           "inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/100 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white md:hidden",
@@ -116,9 +114,9 @@ function SearchBar() {
           value={search.inputValue}
           onChange={(event) => search.setQuery(event.target.value)}
           onFocus={() => search.setIsPanelOpen(true)}
-          placeholder="Search sets and tags…"
+          placeholder={t('content.Search sets and tags…')}
           className="h-10 w-full rounded-xl border border-input bg-muted/40 py-2 sm:pr-20 pr-8 pl-9 text-sm outline-none transition-[color,box-shadow,border-color] placeholder:text-muted-foreground focus:border-primary focus:ring-3 focus:ring-primary/30"
-          aria-label="Search quiz sets"
+          aria-label={t('content.Search quiz sets')}
           aria-expanded={showPanel}
           aria-controls="search-results-panel"
           autoComplete="off"
@@ -127,7 +125,7 @@ function SearchBar() {
           {search.inputValue && (
             <button
               type="button"
-              aria-label="Clear search"
+              aria-label={t('content.Clear search')}
               onClick={() => search.clearSearch()}
               className="sm:inline-flex hidden size-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
             >
@@ -139,7 +137,7 @@ function SearchBar() {
           </kbd>
           <button
             type="button"
-            aria-label="Close search"
+            aria-label={t('content.Close search')}
             onClick={() => {
               search.setIsMobileSearchOpen(false)
               search.setIsPanelOpen(false)
@@ -158,7 +156,7 @@ function SearchBar() {
           >
             {search.isLoading && (
               <p className="px-4 py-6 text-center text-sm text-muted-foreground">
-                Searching…
+                {t('content.Searching…')}
               </p>
             )}
 
@@ -173,7 +171,7 @@ function SearchBar() {
               search.hasActiveSearch &&
               search.dropdownResults.length === 0 && (
                 <p className="px-4 py-6 text-center text-sm text-muted-foreground">
-                  No sets match “{search.query || search.tagFilter}”.
+                  {t('content.No sets match “{{query}}”.', { query: search.query || search.tagFilter })}
                 </p>
               )}
 
@@ -224,13 +222,13 @@ function SearchBar() {
                 onClick={() => search.setIsPanelOpen(false)}
                 className="block border-t border-border px-4 py-2.5 text-center text-sm font-medium text-primary hover:bg-muted/50"
               >
-                View all {search.totalCount} results
+                {t('content.View all {{count}} results', { count: search.totalCount })}
               </Link>
             )}
 
             {!search.hasActiveSearch && search.inputValue.trim().length === 0 && (
               <p className="px-4 py-6 text-center text-sm text-muted-foreground">
-                Search by set name or tag.
+                {t('content.Search by set name or tag.')}
               </p>
             )}
           </div>
@@ -293,7 +291,7 @@ function ProfileMenu() {
     <div ref={menuRef} className="relative">
       <button
         type="button"
-        aria-label="Open profile menu"
+        aria-label={t('content.Open profile menu')}
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
         className="inline-flex size-10 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-sm font-semibold text-foreground transition-colors hover:border-primary/50"
@@ -309,10 +307,10 @@ function ProfileMenu() {
         <div className="absolute top-[calc(100%+0.5rem)] right-0 z-50 w-56 overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg">
           <div className="border-b border-border px-3 py-2.5">
             <p className="truncate text-sm font-medium">
-              {user?.identifier ?? "Guest"}
+              {user?.identifier ?? t('content.Guest')}
             </p>
             <p className="text-xs text-muted-foreground">
-              {token ? "Signed in" : "Browsing anonymously"}
+              {token ? t('content.Signed in') : t('content.Browsing anonymously')}
             </p>
           </div>
           <div className="flex flex-col py-1">
@@ -326,11 +324,11 @@ function ProfileMenu() {
             </Link>
             <Link
               href="/admin/add-question"
-              aria-label="Create new set"
+              aria-label={t('content.Create new set')}
               className="sm:hidden flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <Plus className="size-4" aria-hidden="true" />
-              Create new set
+              {t('content.Create new set')}
             </Link>
             <Link
               href="/admin/add-question"
@@ -338,7 +336,7 @@ function ProfileMenu() {
               className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
             >
               <Settings className="size-4" aria-hidden="true" />
-              Preferences
+              {t('content.Preferences')}
             </Link>
             <button
               type="button"
@@ -351,19 +349,17 @@ function ProfileMenu() {
                 <Moon className="size-4" aria-hidden="true" />
               )}
               {t('content.Dark Mode')}
-              <span className="ml-auto text-xs">{darkMode ? "On" : "Off"}</span>
+              <span className="ml-auto text-xs">{darkMode ? t('content.On') : t('content.Off')}</span>
             </button>
             {/* Language Selector */}
             <div className="flex items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground">
               <Languages />
               <select
-                defaultValue=""
+                value={i18n.language}
                 onChange={languageHandler}
+                aria-label={t('content.Select a language')}
                 className="w-full max-w-48 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="" disabled>
-                  Select a language
-                </option>
 
                 {languages.map((item) => (
                   <option key={item.value} value={item.value}>
@@ -379,7 +375,7 @@ function ProfileMenu() {
                 className="flex items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
               >
                 <LogOut className="size-4" aria-hidden="true" />
-                Sign Out
+                {t('content.Sign Out')}
               </button>
             ) : (
               <Link
@@ -388,7 +384,7 @@ function ProfileMenu() {
                 className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground"
               >
                 <LogOut className="size-4" aria-hidden="true" />
-                Sign In
+                {t('content.Sign In')}
               </Link>
             )}
           </div>
@@ -399,6 +395,7 @@ function ProfileMenu() {
 }
 
 function SiteHeaderInner() {
+  const { t } = useTranslation()
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-md">
@@ -424,7 +421,7 @@ function SiteHeaderInner() {
 
           <Link
             href="/admin/add-question"
-            aria-label="Create new set"
+            aria-label={t('content.Create new set')}
             className="hidden sm:inline-flex size-10 items-center justify-center rounded-xl bg-slate-800/100 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
           >
             <Plus className="size-4" aria-hidden="true" />
@@ -449,6 +446,7 @@ function HeaderFallback() {
 export function SiteHeader() {
   return (
     <Suspense fallback={<HeaderFallback />}>
+      <I18nLanguageSync />
       <SiteHeaderInner />
     </Suspense>
   )

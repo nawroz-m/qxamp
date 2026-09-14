@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { useComments } from "@/lib/use-comments";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 type CommentThreadProps = {
   setName: string;
@@ -13,22 +15,23 @@ type CommentThreadProps = {
   onCommentAdded?: () => void;
 };
 
-function formatCommentTime(timestamp: number) {
-  if (!timestamp) return "Just now";
+function formatCommentTime(timestamp: number, t: TFunction, locale: string) {
+  if (!timestamp) return t("content.Just now");
 
   const diffMs = Date.now() - timestamp;
   const diffMinutes = Math.floor(diffMs / 60000);
-  if (diffMinutes < 1) return "Just now";
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  if (diffMinutes < 1) return t("content.Just now");
+  if (diffMinutes < 60) return t("content.{{count}}m ago", { count: diffMinutes });
 
   const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffHours < 24) return t("content.{{count}}h ago", { count: diffHours });
 
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays === 1) return t("content.Yesterday");
+  if (diffDays < 7) return t("content.{{count}}d ago", { count: diffDays });
 
-  return new Date(timestamp).toLocaleDateString(undefined, {
+  const dateLocale = locale === "far" ? "fa" : locale;
+  return new Date(timestamp).toLocaleDateString(dateLocale, {
     month: "short",
     day: "numeric",
   });
@@ -39,6 +42,7 @@ export function CommentThread({
   commentsState,
   onCommentAdded,
 }: CommentThreadProps) {
+  const { t, i18n } = useTranslation();
   const {
     comments,
     isOpen,
@@ -71,7 +75,7 @@ export function CommentThread({
       className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 p-4 backdrop-blur-sm sm:items-center"
       role="dialog"
       aria-modal="true"
-      aria-label={`Comments for ${setName}`}
+      aria-label={t("content.Comments for {{setName}}", { setName })}
       onClick={close}
     >
       <div
@@ -84,13 +88,13 @@ export function CommentThread({
               className="size-4 text-muted-foreground"
               aria-hidden="true"
             />
-            <h2 className="text-sm font-semibold">Discussion</h2>
+            <h2 className="text-sm font-semibold">{t("content.Discussion")}</h2>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={close}
-            aria-label="Close comments"
+            aria-label={t("content.Close comments")}
           >
             <X className="size-4" aria-hidden="true" />
           </Button>
@@ -100,13 +104,13 @@ export function CommentThread({
           {isLoading && (
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-              Loading comments…
+              {t("content.Loading comments…")}
             </p>
           )}
 
           {!isLoading && comments.length === 0 && (
             <p className="text-sm text-muted-foreground">
-              No comments yet. Start the discussion.
+              {t("content.No comments yet. Start the discussion.")}
             </p>
           )}
 
@@ -121,7 +125,7 @@ export function CommentThread({
                     {comment.displayName}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {formatCommentTime(comment.createdAt)}
+                    {formatCommentTime(comment.createdAt, t, i18n.language)}
                   </span>
                 </div>
                 <p className="mt-1 text-sm leading-relaxed text-foreground/90">
@@ -134,13 +138,13 @@ export function CommentThread({
 
         <form className="border-t p-4" onSubmit={handleSubmit}>
           <label htmlFor={`comment-input-${setName}`} className="sr-only">
-            Write a comment
+            {t("content.Write a comment")}
           </label>
           <Textarea
             id={`comment-input-${setName}`}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder="Share your thoughts…"
+            placeholder={t("content.Share your thoughts…")}
             rows={3}
             disabled={isSubmitting}
           />
@@ -156,7 +160,7 @@ export function CommentThread({
               ) : (
                 <Send className="size-4" aria-hidden="true" />
               )}
-              Post comment
+              {t("content.Post comment")}
             </Button>
           </div>
         </form>
@@ -176,12 +180,14 @@ export function CommentTriggerButton({
   disabled?: boolean;
   className?: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={`Open comments (${count})`}
+      aria-label={t("content.Open comments ({{count}})", { count })}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50 cursor-pointer",
         className,

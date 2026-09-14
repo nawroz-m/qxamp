@@ -13,25 +13,28 @@ import { resolveCoverImage } from "@/lib/cover-images";
 import { useComments } from "@/lib/use-comments";
 import { useSetActions } from "@/lib/use-set-actions";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
-function formatRelativeTimestamp(timestamp?: number) {
-  if (!timestamp) return "Recently";
+function formatRelativeTimestamp(timestamp: number | undefined, t: TFunction, locale: string) {
+  if (!timestamp) return t("content.Recently");
 
   const diffMs = Date.now() - timestamp;
   const diffDays = Math.floor(diffMs / 86400000);
-  if (diffDays <= 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays <= 0) return t("content.Today");
+  if (diffDays === 1) return t("content.Yesterday");
+  if (diffDays < 7) return t("content.{{count}}d ago", { count: diffDays });
 
-  return new Date(timestamp).toLocaleDateString(undefined, {
+  const dateLocale = locale === "far" ? "fa" : locale;
+  return new Date(timestamp).toLocaleDateString(dateLocale, {
     month: "short",
     day: "numeric",
   });
 }
 
-function formatReadTime(questionCount: number) {
+function formatReadTime(questionCount: number, t: TFunction) {
   const minutes = Math.max(1, Math.ceil(questionCount * 0.5));
-  return `${minutes}m read`;
+  return t("content.{{minutes}}m read", { minutes });
 }
 
 function ActionButton({
@@ -64,12 +67,13 @@ function ActionButton({
 }
 
 export function SetCard({ set }: { set: QuizSet }) {
+  const { t, i18n } = useTranslation();
   const actions = useSetActions(set.setId);
   const commentsState = useComments(set.setId);
 
   const tags = (set.tags ?? []).map((tag) => (tag.startsWith("#") ? tag : `#${tag}`));
   const coverImage = resolveCoverImage(set.coverImage);
-  const metadata = `${formatRelativeTimestamp(set.createdAt)} • ${formatReadTime(set.questions.length)}`;
+  const metadata = `${formatRelativeTimestamp(set.createdAt, t, i18n.language)} • ${formatReadTime(set.questions.length, t)}`;
 
   function stopCardNavigation(event: React.MouseEvent | React.KeyboardEvent) {
     event.preventDefault();
@@ -84,7 +88,7 @@ export function SetCard({ set }: { set: QuizSet }) {
           className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <Badge variant="secondary" className="absolute top-3 right-3">
-            {set.questions.length} questions
+            {t("content.{{count}} questions", { count: set.questions.length })}
           </Badge>
           <div className="flex flex-col gap-3 px-4 pt-4">
             <div className="flex items-start gap-3">
@@ -131,7 +135,7 @@ export function SetCard({ set }: { set: QuizSet }) {
         >
           <div className="flex items-center gap-0.5">
             <ActionButton
-              label="Upvote"
+              label={t("content.Upvote")}
               onClick={() => void actions.vote("up")}
               disabled={actions.isUpdating}
               active={actions.userAction.vote === "up"}
@@ -143,7 +147,7 @@ export function SetCard({ set }: { set: QuizSet }) {
             </ActionButton>
 
             <ActionButton
-              label="Downvote"
+              label={t("content.Downvote")}
               onClick={() => void actions.vote("down")}
               disabled={actions.isUpdating}
               active={actions.userAction.vote === "down"}
@@ -161,7 +165,7 @@ export function SetCard({ set }: { set: QuizSet }) {
           <div className="flex items-center gap-0.5">
             <ActionButton
               label={
-                actions.userAction.bookmarked ? "Remove bookmark" : "Bookmark"
+                actions.userAction.bookmarked ? t("content.Remove bookmark") : t("content.Bookmark")
               }
               onClick={() => void actions.toggleBookmark()}
               disabled={actions.isUpdating}
@@ -178,7 +182,7 @@ export function SetCard({ set }: { set: QuizSet }) {
             </ActionButton>
 
             <ActionButton
-              label="Share"
+              label={t("content.Share")}
               onClick={() => void actions.share()}
               disabled={actions.isUpdating}
             >

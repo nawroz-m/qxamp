@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MAX_SET_TAGS, normalizeTags } from "@/lib/search-index"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 type TagInputProps = {
   id?: string
@@ -20,14 +21,16 @@ type TagInputProps = {
 
 export function TagInput({
   id = "set-tags",
-  label = "Tags",
+  label,
   value,
   onChange,
   maxTags = MAX_SET_TAGS,
   disabled,
   className,
 }: TagInputProps) {
+  const { t } = useTranslation()
   const [draft, setDraft] = useState("")
+  const resolvedLabel = label ?? t("content.Tags")
 
   function commitDraft(raw: string) {
     const pieces = raw
@@ -66,7 +69,7 @@ export function TagInput({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex items-center justify-between gap-2">
-        <Label htmlFor={id}>{label}</Label>
+        <Label htmlFor={id}>{resolvedLabel}</Label>
         <span className="text-xs text-muted-foreground">
           {value.length}/{maxTags}
         </span>
@@ -78,7 +81,7 @@ export function TagInput({
             #{tag}
             <button
               type="button"
-              aria-label={`Remove ${tag}`}
+              aria-label={t("content.Remove {{tag}}", { tag })}
               disabled={disabled}
               onClick={() => removeTag(tag)}
               className="rounded-sm p-0.5 text-muted-foreground hover:text-foreground"
@@ -94,12 +97,12 @@ export function TagInput({
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={onKeyDown}
           onBlur={() => commitDraft(draft)}
-          placeholder={atLimit ? "Tag limit reached" : "Type and press Enter"}
+          placeholder={atLimit ? t("content.Tag limit reached") : t("content.Type and press Enter")}
           className="h-7 min-w-[8rem] flex-1 border-0 bg-transparent px-1 shadow-none focus-visible:ring-0"
         />
       </div>
       <p className="text-xs text-muted-foreground">
-        Lowercase, unique tags. Press Enter or comma to add.
+        {t("content.Lowercase, unique tags. Press Enter or comma to add.")}
       </p>
     </div>
   )
